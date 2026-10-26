@@ -12,7 +12,7 @@
     <!-- Header -->
     <header class="app-header">
       <div class="logo">
-        <span class="logo-icon">💰</span>
+        <span class="logo-icon">👛</span>
         <h1>SakuQ</h1>
       </div>
       <div class="streak-badge" id="streakBadge" title="Streak Hari Hemat">
@@ -51,33 +51,39 @@
       </div>
     </section>
 
-    <!-- Form Setting Uang Saku Awal -->
-    <section class="card">
-      <details id="setupDetails">
-        <summary><strong>⚙️ Pengaturan Saku & Target</strong></summary>
-        <form id="setupForm" class="form-group">
-          <label for="allowanceInput">Nominal Uang Saku (Rp)</label>
-          <input type="number" id="allowanceInput" placeholder="Contoh: 100000" required min="1000">
+   <!-- Kartu 1: Form Target Impian -->
+<section class="card">
+  <h3>🎯 Langkah 1: Set Target Impian</h3>
+  <form id="targetForm" class="form-group">
+    <label for="targetNameInput">Nama Barang / Impian</label>
+    <input type="text" id="targetNameInput" placeholder="Contoh: Beli Sepatu Baru" required>
 
-          <label for="periodSelect">Periode Uang Saku</label>
-          <select id="periodSelect">
-            <option value="7">Mingguan (7 Hari)</option>
-            <option value="30">Bulanan (30 Hari)</option>
-          </select>
+    <label for="targetAmountInput">Nominal Target (Rp)</label>
+    <input type="number" id="targetAmountInput" placeholder="Contoh: 200000" required min="1000">
 
-          <label for="autoSavePercent">Alokasi Auto-Save Tabungan (%)</label>
-          <input type="number" id="autoSavePercent" value="10" min="0" max="50">
+    <button type="submit" class="btn btn-primary">Simpan Target</button>
+  </form>
+</section>
 
-          <label for="targetNameInput">Nama Target Tabungan</label>
-          <input type="text" id="targetNameInput" placeholder="Contoh: Beli Sepatu Baru">
+<!-- Kartu 2: Form Uang Saku & Auto-Save -->
+<section class="card">
+  <h3>💰 Langkah 2: Atur Uang Saku</h3>
+  <form id="allowanceForm" class="form-group">
+    <label for="allowanceInput">Nominal Uang Saku (Rp)</label>
+    <input type="number" id="allowanceInput" placeholder="Contoh: 100000" required min="1000">
 
-          <label for="targetAmountInput">Nominal Target Tabungan (Rp)</label>
-          <input type="number" id="targetAmountInput" placeholder="Contoh: 200000" min="0">
+    <label for="periodSelect">Periode Uang Saku</label>
+    <select id="periodSelect">
+      <option value="7">Mingguan (7 Hari)</option>
+      <option value="30">Bulanan (30 Hari)</option>
+    </select>
 
-          <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
-        </form>
-      </details>
-    </section>
+    <label for="autoSavePercent">Alokasi Auto-Save (%)</label>
+    <input type="number" id="autoSavePercent" value="10" min="0" max="50">
+
+    <button type="submit" class="btn btn-action">Set Uang Saku & Nabung</button>
+  </form>
+</section>
 
     <!-- Form Tambah Transaksi -->
     <section class="card">
