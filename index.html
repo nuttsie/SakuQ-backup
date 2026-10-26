@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SakuQuest - Hemat & Nabung Seru</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="data:application/json,{%22name%22:%22SakuQuest%22,%22short_name%22:%22SakuQuest%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230f172a%22,%22theme_color%22:%22%236366f1%22}">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo">
+        <span class="logo-icon">🚀</span>
+        <h1>SakuQuest</h1>
+      </div>
+      <div class="streak-badge" id="streakBadge" title="Streak Hari Hemat">
+        🔥 <span id="streakCount">0</span> Hari
+      </div>
+    </header>
+
+    <!-- Banner Status Offline -->
+    <div id="offlineNotice" class="offline-notice hidden">
+      ⚡ Mode Offline Aktif (Data tetap tersimpan)
+    </div>
+
+    <!-- Overview Card (Status Keuangan) -->
+    <section class="card summary-card">
+      <h2>Ringkasan Saku</h2>
+      <div class="grid-2">
+        <div class="stat-box">
+          <small>Sisa Jajan Hari Ini</small>
+          <div class="stat-value" id="dailyBudgetDisplay">Rp 0</div>
+        </div>
+        <div class="stat-box">
+          <small>Total Tabungan</small>
+          <div class="stat-value highlight" id="totalSavingsDisplay">Rp 0</div>
+        </div>
+      </div>
+      
+      <!-- Progress Bar Target -->
+      <div class="target-section">
+        <div class="target-header">
+          <span>Target: <strong id="targetNameDisplay">Belum Ada Target</strong></span>
+          <span id="targetProgressPercent">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="targetProgressBar" style="width: 0%;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Form Setting Uang Saku Awal -->
+    <section class="card">
+      <details id="setupDetails">
+        <summary><strong>⚙️ Pengaturan Saku & Target</strong></summary>
+        <form id="setupForm" class="form-group">
+          <label for="allowanceInput">Nominal Uang Saku (Rp)</label>
+          <input type="number" id="allowanceInput" placeholder="Contoh: 100000" required min="1000">
+
+          <label for="periodSelect">Periode Uang Saku</label>
+          <select id="periodSelect">
+            <option value="7">Mingguan (7 Hari)</option>
+            <option value="30">Bulanan (30 Hari)</option>
+          </select>
+
+          <label for="autoSavePercent">Alokasi Auto-Save Tabungan (%)</label>
+          <input type="number" id="autoSavePercent" value="10" min="0" max="50">
+
+          <label for="targetNameInput">Nama Target Tabungan</label>
+          <input type="text" id="targetNameInput" placeholder="Contoh: Beli Sepatu Baru">
+
+          <label for="targetAmountInput">Nominal Target Tabungan (Rp)</label>
+          <input type="number" id="targetAmountInput" placeholder="Contoh: 200000" min="0">
+
+          <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
+        </form>
+      </details>
+    </section>
+
+    <!-- Form Tambah Transaksi -->
+    <section class="card">
+      <h3>➕ Catat Pengeluaran</h3>
+      <form id="expenseForm" class="form-group">
+        <label for="expenseTitle">Keterangan / Jajanan</label>
+        <input type="text" id="expenseTitle" placeholder="Contoh: Es Boba / Cilok" required>
+
+        <label for="expenseAmount">Nominal (Rp)</label>
+        <input type="number" id="expenseAmount" placeholder="Contoh: 10000" required min="500">
+
+        <button type="submit" class="btn btn-action">Catat Pengeluaran</button>
+      </form>
+    </section>
+
+    <!-- Lencana / Badges -->
+    <section class="card">
+      <h3>🏆 Lencana Pencapaian</h3>
+      <div class="badges-grid" id="badgesContainer">
+        <!-- Generasi Badge via JS -->
+      </div>
+    </section>
+
+    <!-- Riwayat Transaksi -->
+    <section class="card">
+      <h3>📜 Riwayat Pengeluaran</h3>
+      <ul class="history-list" id="historyList">
+        <li class="empty-msg">Belum ada pengeluaran dicatat.</li>
+      </ul>
+      <button id="resetDataBtn" class="btn btn-danger">Reset Semua Data</button>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
