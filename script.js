@@ -171,6 +171,22 @@ function initPWA() {
   }
 }
 
+/* Logo SakuQ */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo h1 {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.logo-icon {
+    font-size: 26px;
+}
 function updateOnlineStatus() {
   const notice = document.getElementById('offlineNotice');
   if (!navigator.onLine) {
