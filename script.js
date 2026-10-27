@@ -42,81 +42,76 @@ function saveData() {
 
 // Event Listeners
 function registerEvents() {
- // --- Di dalam fungsi registerEvents() pada script.js ---
+  // 1. Form Target Impian (Langkah 1)
+  const targetForm = document.getElementById('targetForm');
+  if (targetForm) {
+    targetForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const targetName = document.getElementById('targetNameInput').value;
+      const targetAmount = parseFloat(document.getElementById('targetAmountInput').value) || 0;
 
-// 1. Form Target Impian
-document.getElementById('targetForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const targetName = document.getElementById('targetNameInput').value;
-  const targetAmount = parseFloat(document.getElementById('targetAmountInput').value) || 0;
+      appData.targetName = targetName;
+      appData.targetAmount = targetAmount;
 
-  appData.targetName = targetName;
-  appData.targetAmount = targetAmount;
-
-  saveData();
-  alert(`Target "${targetName}" berhasil dibuat! Sekarang atur uang sakumu di Langkah 2.`);
-});
-
-// 2. Form Uang Saku & Auto-Save
-document.getElementById('allowanceForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const allowance = parseFloat(document.getElementById('allowanceInput').value) || 0;
-  const periodDays = parseInt(document.getElementById('periodSelect').value) || 7;
-  const autoSavePercent = parseFloat(document.getElementById('autoSavePercent').value) || 0;
-
-  // Hitung potongan Auto-Save
-  const autoSavedAmount = (allowance * autoSavePercent) / 100;
-  
-  appData.allowance = allowance - autoSavedAmount; // Sisa uang jajan
-  appData.periodDays = periodDays;
-  appData.autoSavePercent = autoSavePercent;
-  appData.savingsTotal += autoSavedAmount; // Masuk brankas tabungan
-
-  saveData();
-  alert(`Uang saku diatur! Rp ${autoSavedAmount.toLocaleString('id-ID')} masuk ke tabungan target "${appData.targetName || 'Impian'}".`);
-});
-
-    // Kalkulasi Auto-Save awal
-    const autoSavedAmount = (allowance * autoSavePercent) / 100;
-    
-    appData.allowance = allowance - autoSavedAmount; // Sisa uang jajan murni
-    appData.periodDays = periodDays;
-    appData.autoSavePercent = autoSavePercent;
-    appData.targetName = targetName;
-    appData.targetAmount = targetAmount;
-    appData.savingsTotal += autoSavedAmount; // Otomatis masuk tabungan
-
-    document.getElementById('setupDetails').open = false;
-    saveData();
-    alert(`Pengaturan disimpan! Rp ${autoSavedAmount.toLocaleString('id-ID')} berhasil dipindahkan ke Tabungan.`);
-  });
-
-  // Form Pengeluaran
-  document.getElementById('expenseForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const title = document.getElementById('expenseTitle').value;
-    const amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
-
-    appData.expenses.unshift({
-      id: Date.now(),
-      title,
-      amount,
-      date: new Date().toLocaleDateString('id-ID')
+      saveData();
+      alert(`Target "${targetName}" berhasil dibuat! Sekarang atur uang sakumu di Langkah 2.`);
     });
+  }
 
-    updateStreak();
-    document.getElementById('expenseTitle').value = '';
-    document.getElementById('expenseAmount').value = '';
-    saveData();
-  });
+  // 2. Form Uang Saku & Auto-Save (Langkah 2)
+  const allowanceForm = document.getElementById('allowanceForm');
+  if (allowanceForm) {
+    allowanceForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const allowance = parseFloat(document.getElementById('allowanceInput').value) || 0;
+      const periodDays = parseInt(document.getElementById('periodSelect').value) || 7;
+      const autoSavePercent = parseFloat(document.getElementById('autoSavePercent').value) || 0;
 
-  // Reset Data
-  document.getElementById('resetDataBtn').addEventListener('click', () => {
-    if (confirm('Apakah Anda yakin ingin menghapus seluruh data?')) {
-      localStorage.removeItem('sakuquest_data');
-      location.reload();
-    }
-  });
+      // Hitung potongan Auto-Save
+      const autoSavedAmount = (allowance * autoSavePercent) / 100;
+      
+      appData.allowance = allowance - autoSavedAmount; // Sisa uang jajan
+      appData.periodDays = periodDays;
+      appData.autoSavePercent = autoSavePercent;
+      appData.savingsTotal += autoSavedAmount; // Masuk brankas tabungan
+
+      saveData();
+      alert(`Uang saku diatur! Rp ${autoSavedAmount.toLocaleString('id-ID')} masuk ke tabungan target "${appData.targetName || 'Impian'}".`);
+    });
+  }
+
+  // 3. Form Pengeluaran
+  const expenseForm = document.getElementById('expenseForm');
+  if (expenseForm) {
+    expenseForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = document.getElementById('expenseTitle').value;
+      const amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
+
+      appData.expenses.unshift({
+        id: Date.now(),
+        title,
+        amount,
+        date: new Date().toLocaleDateString('id-ID')
+      });
+
+      updateStreak();
+      document.getElementById('expenseTitle').value = '';
+      document.getElementById('expenseAmount').value = '';
+      saveData();
+    });
+  }
+
+  // 4. Reset Data
+  const resetBtn = document.getElementById('resetDataBtn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      if (confirm('Apakah Anda yakin ingin menghapus seluruh data?')) {
+        localStorage.removeItem('sakuquest_data');
+        location.reload();
+      }
+    });
+  }
 
   // Status Online/Offline Detector
   window.addEventListener('online', updateOnlineStatus);
@@ -158,33 +153,41 @@ function render() {
     progressPercent = Math.min(100, Math.round((appData.savingsTotal / appData.targetAmount) * 100));
   }
   document.getElementById('targetProgressPercent').textContent = `${progressPercent}%`;
-  document.getElementById('targetProgressBar').style.width = `${progressPercent}%`;
+  
+  const progressBar = document.getElementById('targetProgressBar');
+  if (progressBar) {
+    progressBar.style.width = `${progressPercent}%`;
+  }
 
   // Render Badges
   const badgesContainer = document.getElementById('badgesContainer');
-  badgesContainer.innerHTML = '';
-  BADGES.forEach(badge => {
-    const isUnlocked = appData.savingsTotal > 0 && appData.streakDays >= badge.reqStreak;
-    const badgeEl = document.createElement('div');
-    badgeEl.className = `badge-item ${isUnlocked ? 'unlocked' : ''}`;
-    badgeEl.innerHTML = `
-      <span class="badge-icon">${badge.icon}</span>
-      <div class="badge-name">${badge.name}</div>
-    `;
-    badgesContainer.appendChild(badgeEl);
-  });
+  if (badgesContainer) {
+    badgesContainer.innerHTML = '';
+    BADGES.forEach(badge => {
+      const isUnlocked = appData.savingsTotal > 0 && appData.streakDays >= badge.reqStreak;
+      const badgeEl = document.createElement('div');
+      badgeEl.className = `badge-item ${isUnlocked ? 'unlocked' : ''}`;
+      badgeEl.innerHTML = `
+        <span class="badge-icon">${badge.icon}</span>
+        <div class="badge-name">${badge.name}</div>
+      `;
+      badgesContainer.appendChild(badgeEl);
+    });
+  }
 
   // Render Riwayat
   const historyList = document.getElementById('historyList');
-  if (appData.expenses.length === 0) {
-    historyList.innerHTML = '<li class="empty-msg">Belum ada pengeluaran dicatat.</li>';
-  } else {
-    historyList.innerHTML = appData.expenses.map(item => `
-      <li class="history-item">
-        <span>${item.title} <small style="color:#94a3b8">(${item.date})</small></span>
-        <strong style="color:#ef4444">- Rp ${item.amount.toLocaleString('id-ID')}</strong>
-      </li>
-    `).join('');
+  if (historyList) {
+    if (appData.expenses.length === 0) {
+      historyList.innerHTML = '<li class="empty-msg">Belum ada pengeluaran dicatat.</li>';
+    } else {
+      historyList.innerHTML = appData.expenses.map(item => `
+        <li class="history-item">
+          <span>${item.title} <small style="color:#94a3b8">(${item.date})</small></span>
+          <strong style="color:#ef4444">- Rp ${item.amount.toLocaleString('id-ID')}</strong>
+        </li>
+      `).join('');
+    }
   }
 }
 
@@ -196,27 +199,13 @@ function initPWA() {
   }
 }
 
-/* Logo SakuQ */
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.logo h1 {
-    font-size: 32px;
-    font-weight: 800;
-    margin: 0;
-}
-
-.logo-icon {
-    font-size: 26px;
-}
 function updateOnlineStatus() {
   const notice = document.getElementById('offlineNotice');
-  if (!navigator.onLine) {
-    notice.classList.remove('hidden');
-  } else {
-    notice.classList.add('hidden');
+  if (notice) {
+    if (!navigator.onLine) {
+      notice.classList.remove('hidden');
+    } else {
+      notice.classList.add('hidden');
+    }
   }
 }
