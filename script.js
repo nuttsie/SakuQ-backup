@@ -42,14 +42,39 @@ function saveData() {
 
 // Event Listeners
 function registerEvents() {
-  // Form Setup
-  document.getElementById('setupForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const allowance = parseFloat(document.getElementById('allowanceInput').value) || 0;
-    const periodDays = parseInt(document.getElementById('periodSelect').value) || 7;
-    const autoSavePercent = parseFloat(document.getElementById('autoSavePercent').value) || 0;
-    const targetName = document.getElementById('targetNameInput').value;
-    const targetAmount = parseFloat(document.getElementById('targetAmountInput').value) || 0;
+ // --- Di dalam fungsi registerEvents() pada script.js ---
+
+// 1. Form Target Impian
+document.getElementById('targetForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const targetName = document.getElementById('targetNameInput').value;
+  const targetAmount = parseFloat(document.getElementById('targetAmountInput').value) || 0;
+
+  appData.targetName = targetName;
+  appData.targetAmount = targetAmount;
+
+  saveData();
+  alert(`Target "${targetName}" berhasil dibuat! Sekarang atur uang sakumu di Langkah 2.`);
+});
+
+// 2. Form Uang Saku & Auto-Save
+document.getElementById('allowanceForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const allowance = parseFloat(document.getElementById('allowanceInput').value) || 0;
+  const periodDays = parseInt(document.getElementById('periodSelect').value) || 7;
+  const autoSavePercent = parseFloat(document.getElementById('autoSavePercent').value) || 0;
+
+  // Hitung potongan Auto-Save
+  const autoSavedAmount = (allowance * autoSavePercent) / 100;
+  
+  appData.allowance = allowance - autoSavedAmount; // Sisa uang jajan
+  appData.periodDays = periodDays;
+  appData.autoSavePercent = autoSavePercent;
+  appData.savingsTotal += autoSavedAmount; // Masuk brankas tabungan
+
+  saveData();
+  alert(`Uang saku diatur! Rp ${autoSavedAmount.toLocaleString('id-ID')} masuk ke tabungan target "${appData.targetName || 'Impian'}".`);
+});
 
     // Kalkulasi Auto-Save awal
     const autoSavedAmount = (allowance * autoSavePercent) / 100;
