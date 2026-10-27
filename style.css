@@ -1,16 +1,33 @@
-/* Reset & Variabel Warna (Theme: Dark Modern / Teen Energetic) */
+/* ==========================================
+   1. VARIABEL WARNA TEMA (DARK / LIGHT)
+   ========================================== */
 :root {
   --bg-color: #0f172a;
   --card-bg: #1e293b;
+  --text-color: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+  --input-bg: #0f172a;
   --primary: #6366f1;
   --primary-hover: #4f46e5;
   --accent: #10b981;
   --danger: #ef4444;
-  --text: #f8fafc;
-  --text-muted: #94a3b8;
   --border-radius: 16px;
 }
 
+/* Mode Terang (Light Mode - Kontras Tinggi) */
+[data-theme="light"] {
+  --bg-color: #f1f5f9;
+  --card-bg: #ffffff;
+  --text-color: #0f172a;   /* Teks utama menjadi gelap pekat */
+  --text-muted: #475569;  /* Teks sekunder abu-abu gelap */
+  --border-color: #cbd5e1; /* Garis tepi tegas */
+  --input-bg: #f8fafc;
+}
+
+/* ==========================================
+   2. STYLES GLOBAL & TAMPILAN DASAR
+   ========================================== */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -20,16 +37,17 @@
 
 body {
   background-color: var(--bg-color);
-  color: var(--text);
+  color: var(--text-color);
   display: flex;
   justify-content: center;
   padding: 16px;
   min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .app-container {
   width: 100%;
-  max-width: 480px; /* Tampilan optimal seluler & desktop tengah */
+  max-width: 480px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -50,20 +68,45 @@ body {
 }
 
 .logo h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #a5b4fc, #6366f1);
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #818cf8, #6366f1);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
+.logo-icon {
+  font-size: 1.6rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.theme-btn {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  font-size: 1.1rem;
+  padding: 6px 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+.theme-btn:hover {
+  transform: scale(1.1);
+}
+
 .streak-badge {
-  background-color: #334155;
+  background-color: var(--card-bg);
+  color: var(--text-color);
   padding: 6px 12px;
   border-radius: 20px;
   font-weight: bold;
   font-size: 0.9rem;
-  border: 1px solid #475569;
+  border: 1px solid var(--border-color);
 }
 
 .offline-notice {
@@ -80,19 +123,24 @@ body {
   display: none;
 }
 
-/* Cards */
+/* ==========================================
+   3. KARTU & JUDUL (CARD & HEADINGS)
+   ========================================== */
 .card {
   background-color: var(--card-bg);
   border-radius: var(--border-radius);
   padding: 18px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-  border: 1px solid #334155;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
+/* Memastikan semua judul terasa kontras di mode terang maupun gelap */
 .card h2, .card h3 {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
+  font-weight: 700;
   margin-bottom: 12px;
-  color: var(--text);
+  color: var(--text-color) !important; 
 }
 
 .grid-2 {
@@ -103,32 +151,37 @@ body {
 }
 
 .stat-box {
-  background-color: #0f172a;
+  background-color: var(--input-bg);
   padding: 12px;
   border-radius: 12px;
-  border: 1px solid #334155;
+  border: 1px solid var(--border-color);
 }
 
 .stat-box small {
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .stat-value {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   font-weight: bold;
   margin-top: 4px;
+  color: var(--text-color);
 }
 
 .stat-value.highlight {
   color: var(--accent);
 }
 
-/* Target & Progress Bar */
+/* ==========================================
+   4. PROGRESS BAR & TARGET
+   ========================================== */
 .target-section {
-  background-color: #0f172a;
+  background-color: var(--input-bg);
   padding: 12px;
   border-radius: 12px;
+  border: 1px solid var(--border-color);
 }
 
 .target-header {
@@ -136,23 +189,25 @@ body {
   justify-content: space-between;
   font-size: 0.85rem;
   margin-bottom: 8px;
+  color: var(--text-color);
 }
 
 .progress-bar-bg {
   width: 100%;
   height: 10px;
-  background-color: #334155;
+  background-color: var(--border-color);
   border-radius: 5px;
   overflow: hidden;
 }
 
 .progress-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #10b981, #34d399);
-  transition: width 0.4s ease;
+  transition: width 0.4s ease, background 0.4s ease;
 }
 
-/* Forms */
+/* ==========================================
+   5. FORM & INPUTS
+   ========================================== */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -160,7 +215,8 @@ body {
 }
 
 label {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 600;
   color: var(--text-muted);
 }
 
@@ -168,10 +224,16 @@ input, select {
   width: 100%;
   padding: 10px 12px;
   border-radius: 8px;
-  border: 1px solid #334155;
-  background-color: #0f172a;
-  color: var(--text);
+  border: 1px solid var(--border-color);
+  background-color: var(--input-bg);
+  color: var(--text-color);
   font-size: 0.9rem;
+  font-weight: 500;
+}
+
+input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
 }
 
 input:focus, select:focus {
@@ -179,12 +241,7 @@ input:focus, select:focus {
   border-color: var(--primary);
 }
 
-details summary {
-  cursor: pointer;
-  margin-bottom: 12px;
-}
-
-/* Buttons */
+/* Tombol */
 .btn {
   width: 100%;
   padding: 12px;
@@ -217,7 +274,9 @@ details summary {
   margin-top: 12px;
 }
 
-/* Badges */
+/* ==========================================
+   6. BADGES & RIWAYAT
+   ========================================== */
 .badges-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -225,8 +284,8 @@ details summary {
 }
 
 .badge-item {
-  background-color: #0f172a;
-  border: 1px solid #334155;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 10px;
   text-align: center;
@@ -247,12 +306,12 @@ details summary {
 }
 
 .badge-name {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: bold;
   margin-top: 4px;
+  color: var(--text-color);
 }
 
-/* History List */
 .history-list {
   list-style: none;
   max-height: 200px;
@@ -263,8 +322,9 @@ details summary {
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid var(--border-color);
   font-size: 0.85rem;
+  color: var(--text-color);
 }
 
 .empty-msg {
@@ -272,61 +332,4 @@ details summary {
   color: var(--text-muted);
   font-size: 0.85rem;
   padding: 12px 0;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.logo h1 {
-  font-size: 32px;
-  font-weight: 800;
-  margin: 0;
-}
-
-.logo-icon {
-  font-size: 26px;
-}
-/* Variabel Warna Default (Dark Mode) */
-:root {
-  --bg-color: #0f172a;
-  --card-bg: #1e293b;
-  --text-color: #f8fafc;
-  --text-muted: #94a3b8; /* Abu-abu terang untuk dark mode */
-  --border-color: #334155;
-  --input-bg: #0f172a;
-  --primary: #6366f1;
-  --accent: #10b981;
-  --danger: #ef4444;
-}
-
-/* Variabel Warna Mode Terang (Light Mode - Kontras Tinggi) */
-[data-theme="light"] {
-  --bg-color: #f8fafc;
-  --card-bg: #ffffff;
-  --text-color: #0f172a;   /* Hitam pekat agar teks utama kontras */
-  --text-muted: #334155;  /* Abu-abu gelap agar sub-teks & label tetap jelas terbaca */
-  --border-color: #cbd5e1; /* Garis batas lebih tegas */
-  --input-bg: #ffffff;
-}
-
-/* Terapkan variabel warna ke elemen teks */
-body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-label, small, details summary {
-  color: var(--text-muted); /* Menggunakan warna abu-abu gelap di mode terang */
-  font-weight: 600;          /* Tambah ketebalan font agar lebih tegas */
-}
-
-input, select {
-  background-color: var(--input-bg);
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
-  font-weight: 500;
 }
