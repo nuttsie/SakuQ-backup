@@ -267,4 +267,13 @@ function initPWA() {
   }
 }
 
-function updateOnlineStatus
+function updateOnlineStatus() {
+  const notice = document.getElementById('offlineNotice');
+  if (notice) {
+    if (!navigator.onLine) {
+      notice.classList.remove('hidden');
+    } else {
+      notice.classList.add('hidden');
+    }
+  }
+}
