@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SakuQ - Hemat & Nabung Seru</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="data:application/json,{%22name%22:%22SakuQuest%22,%22short_name%22:%22SakuQuest%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230f172a%22,%22theme_color%22:%22%236366f1%22}">
   <!-- Pustaka Efek Konfeti saat 100% -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
@@ -18,10 +17,7 @@
         <h1>SakuQ</h1>
       </div>
       
-      <!-- Di bagian header index.html -->
-<div class="header-actions">
-  <!-- Tombol Install Aplikasi -->
-  <button id="installBtn" class="theme-btn" title="Install Aplikasi">📥</button>
+      <div class="header-actions">
         <!-- Tombol Switch Tema -->
         <button id="themeToggleBtn" class="theme-btn" title="Ubah Tema">🌙</button>
         
@@ -30,11 +26,6 @@
         </div>
       </div>
     </header>
-
-    <!-- Banner Status Offline -->
-    <div id="offlineNotice" class="offline-notice hidden">
-      ⚡ Mode Offline Aktif (Data tetap tersimpan)
-    </div>
 
     <!-- Overview Card (Status Keuangan) -->
     <section class="card summary-card">
@@ -94,7 +85,8 @@
 
         <label for="periodSelect">Periode Uang Saku</label>
         <select id="periodSelect">
-          <option value="7">Mingguan (7 Hari)</option>
+          <option value="1">Harian (1 Hari)</option>
+          <option value="7" selected>Mingguan (7 Hari)</option>
           <option value="30">Bulanan (30 Hari)</option>
         </select>
 
@@ -139,4 +131,4 @@
 
   <script src="script.js"></script>
 </body>
-  </html>
+</html>
