@@ -19,6 +19,8 @@
       </div>
       
       <div class="header-actions">
+        <!-- Tombol Install PWA (Awalnya tersembunyi) -->
+        <button id="installBtn" class="theme-btn hidden" title="Install Aplikasi">📥</button>
         <!-- Tombol Switch Tema -->
         <button id="themeToggleBtn" class="theme-btn" title="Ubah Tema">🌙</button>
         
@@ -51,7 +53,10 @@
       <div class="target-section">
         <div class="target-header">
           <span>Target: <strong id="targetNameDisplay">Belum Ada Target</strong></span>
-          <span id="targetProgressPercent">0%</span>
+          <div>
+            <span id="targetAmountDisplay" style="font-weight: bold; margin-right: 8px;">Rp 0 / Rp 0</span>
+            <span id="targetProgressPercent">0%</span>
+          </div>
         </div>
         <div class="progress-bar-bg">
           <div class="progress-bar-fill" id="targetProgressBar" style="width: 0%;"></div>
@@ -68,6 +73,12 @@
 
         <label for="targetAmountInput">Nominal Target (Rp)</label>
         <input type="number" id="targetAmountInput" placeholder="Contoh: 200000" required min="1000">
+
+        <label for="targetLinkInput">Link Barang (Opsional)</label>
+        <input type="url" id="targetLinkInput" placeholder="https://tokopedia.link/... atau shopee.co.id/...">
+        <small style="font-size: 0.75rem; color: var(--text-muted); margin-top: -4px; display: block;">
+          💡 <i>Catatan: Masukkan link toko online agar kamu bisa mengecek produknya sewaktu-waktu.</i>
+        </small>
 
         <button type="submit" class="btn btn-primary">Simpan Target</button>
       </form>
@@ -127,4 +138,4 @@
 
   <script src="script.js"></script>
 </body>
-</html>
+  </html>
