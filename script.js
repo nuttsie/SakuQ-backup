@@ -22,8 +22,6 @@ const BADGES = [
   { id: 'streak_7', name: 'Master 7 Hari', icon: '👑', reqStreak: 7 }
 ];
 
-let deferredPrompt = null;
-
 // ==========================================
 // 2. INISIALISASI SAAT HALAMAN DIMUAT
 // ==========================================
@@ -31,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   loadData();
   registerEvents();
-  initPWA();
   render();
 });
 
@@ -109,7 +106,7 @@ function registerEvents() {
     allowanceForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const allowance = parseFloat(document.getElementById('allowanceInput').value) || 0;
-      const periodDays = parseInt(document.getElementById('periodSelect').value) || 7;
+      const periodDays = parseInt(document.getElementById('periodSelect').value) || 1;
       const autoSavePercent = parseFloat(document.getElementById('autoSavePercent').value) || 0;
 
       const autoSavedAmount = (allowance * autoSavePercent) / 100;
@@ -156,14 +153,10 @@ function registerEvents() {
       }
     });
   }
-
-  // F. Detektor Mode Online / Offline
-  window.addEventListener('online', updateOnlineStatus);
-  window.addEventListener('offline', updateOnlineStatus);
 }
 
 // ==========================================
-// 6. LOGIKA KALKULASI & STREAK
+// 6. LOGIKA KALKULASI & STREAK AKURAT
 // ==========================================
 function calculateDailyBudget() {
   if (appData.allowance <= 0) return 0;
@@ -175,10 +168,26 @@ function calculateDailyBudget() {
   return dailyLimit > 0 ? dailyLimit : 0;
 }
 
+// Logika Streak Baru: Streak bertambah jika belanja harian MASIH DI BAWAH batas jajan harian
 function updateStreak() {
-  const today = new Date().toDateString();
-  if (appData.lastStreakDate !== today) {
-    appData.streakDays += 1;
+  const today = new Date().toLocaleDateString('id-ID');
+  
+  // Hitung total belanjaan hari ini
+  const todayExpenses = appData.expenses
+    .filter(item => item.date === today)
+    .reduce((sum, item) => sum + item.amount, 0);
+
+  const dailyBudget = calculateDailyBudget();
+
+  // Jika pengeluaran hari ini masih sesuai atau di bawah batas harian
+  if (todayExpenses <= dailyBudget) {
+    if (appData.lastStreakDate !== today) {
+      appData.streakDays += 1;
+      appData.lastStreakDate = today;
+    }
+  } else {
+    // Jika melebihi batas (overbudget), streak terputus / reset
+    appData.streakDays = 0;
     appData.lastStreakDate = today;
   }
 }
@@ -274,7 +283,7 @@ function render() {
 }
 
 // ==========================================
-// 8. UTILITY & PWA (OFFLINE & INSTALL)
+// 8. UTILITY (EFEK KONFETI)
 // ==========================================
 function triggerRewardConfetti() {
   if (typeof confetti === 'function') {
@@ -285,56 +294,3 @@ function triggerRewardConfetti() {
     });
   }
 }
-
-function initPWA() {
-  updateOnlineStatus();
-  
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Reg Failed', err));
-  }
-
-  const installBtn = document.getElementById('installBtn');
-
-  // Menangkap event install bawaan PWA
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-
-    if (installBtn) {
-      installBtn.classList.remove('hidden');
-    }
-  });
-
-  if (installBtn) {
-    installBtn.addEventListener('click', () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            installBtn.classList.add('hidden');
-          }
-          deferredPrompt = null;
-        });
-      } else {
-        // Petunjuk manual jika dibuka di PC/Browser yang tidak mendukung prompt otomatis
-        alert('📲 Untuk menginstal di HP:\nBuka via Chrome di HP > Klik Titik 3 di pojok kanan atas > Pilih "Tambahkan ke Layar Utama" / "Add to Home Screen".');
-      }
-    });
-  }
-
-  window.addEventListener('appinstalled', () => {
-    if (installBtn) installBtn.classList.add('hidden');
-    deferredPrompt = null;
-  });
-}
-
-function updateOnlineStatus() {
-  const notice = document.getElementById('offlineNotice');
-  if (notice) {
-    if (!navigator.onLine) {
-      notice.classList.remove('hidden');
-    } else {
-      notice.classList.add('hidden');
-    }
-  }
-    }
