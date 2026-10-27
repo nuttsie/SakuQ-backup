@@ -11,7 +11,7 @@ let appData = {
   expenses: [],
   streakDays: 0,
   lastStreakDate: null,
-  isCelebrated: false // Penanda agar efek 100% hanya meledak sekali per target
+  isCelebrated: false
 };
 
 // Konfigurasi Lencana (Badges)
@@ -89,7 +89,7 @@ function registerEvents() {
 
       appData.targetName = targetName;
       appData.targetAmount = targetAmount;
-      appData.isCelebrated = false; // Reset penanda perayaan untuk target baru
+      appData.isCelebrated = false;
 
       saveData();
       alert(`🎯 Target "${targetName}" berhasil dibuat! Sekarang atur uang sakumu di Langkah 2.`);
@@ -105,13 +105,12 @@ function registerEvents() {
       const periodDays = parseInt(document.getElementById('periodSelect').value) || 7;
       const autoSavePercent = parseFloat(document.getElementById('autoSavePercent').value) || 0;
 
-      // Logika Kalkulasi Auto-Save di Awal (Pay Yourself First)
       const autoSavedAmount = (allowance * autoSavePercent) / 100;
       
-      appData.allowance = allowance - autoSavedAmount; // Sisa uang jajan murni
+      appData.allowance = allowance - autoSavedAmount;
       appData.periodDays = periodDays;
       appData.autoSavePercent = autoSavePercent;
-      appData.savingsTotal += autoSavedAmount; // Langsung dialokasikan ke brankas tabungan
+      appData.savingsTotal += autoSavedAmount;
 
       saveData();
       alert(`💰 Uang saku diatur! Rp ${autoSavedAmount.toLocaleString('id-ID')} berhasil dipindahkan ke tabungan target "${appData.targetName || 'Impian'}".`);
@@ -159,4 +158,113 @@ function registerEvents() {
 // ==========================================
 // 6. LOGIKA KALKULASI & STREAK
 // ==========================================
-function calculateDailyBudget
+function calculateDailyBudget() {
+  if (appData.allowance <= 0) return 0;
+  
+  const totalSpent = appData.expenses.reduce((sum, item) => sum + item.amount, 0);
+  const remainingBudget = appData.allowance - totalSpent;
+  const dailyLimit = remainingBudget / appData.periodDays;
+
+  return dailyLimit > 0 ? dailyLimit : 0;
+}
+
+function updateStreak() {
+  const today = new Date().toDateString();
+  if (appData.lastStreakDate !== today) {
+    appData.streakDays += 1;
+    appData.lastStreakDate = today;
+  }
+}
+
+// ==========================================
+// 7. RENDER TAMPILAN (UI UPDATE)
+// ==========================================
+function render() {
+  const dailyBudget = calculateDailyBudget();
+  document.getElementById('dailyBudgetDisplay').textContent = `Rp ${Math.round(dailyBudget).toLocaleString('id-ID')}`;
+  document.getElementById('totalSavingsDisplay').textContent = `Rp ${appData.savingsTotal.toLocaleString('id-ID')}`;
+  document.getElementById('streakCount').textContent = appData.streakDays;
+
+  document.getElementById('targetNameDisplay').textContent = appData.targetName || 'Belum Ada Target';
+  
+  let progressPercent = 0;
+  if (appData.targetAmount > 0) {
+    progressPercent = Math.min(100, Math.round((appData.savingsTotal / appData.targetAmount) * 100));
+  }
+  
+  document.getElementById('targetProgressPercent').textContent = `${progressPercent}%`;
+  
+  const progressBar = document.getElementById('targetProgressBar');
+  if (progressBar) {
+    progressBar.style.width = `${progressPercent}%`;
+    
+    if (progressPercent < 30) {
+      progressBar.style.background = 'linear-gradient(90deg, #ef4444, #f87171)';
+    } else if (progressPercent <= 70) {
+      progressBar.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24)';
+    } else {
+      progressBar.style.background = 'linear-gradient(90deg, #10b981, #34d399)';
+    }
+  }
+
+  if (progressPercent >= 100 && !appData.isCelebrated) {
+    triggerRewardConfetti();
+    appData.isCelebrated = true;
+    localStorage.setItem('sakuquest_data', JSON.stringify(appData));
+    
+    setTimeout(() => {
+      alert(`🎉 SELAMAT! Target kamu "${appData.targetName}" senilai Rp ${appData.targetAmount.toLocaleString('id-ID')} SUDAH TERCAPAI! Kamu keren banget! 🙌`);
+    }, 400);
+  }
+
+  const badgesContainer = document.getElementById('badgesContainer');
+  if (badgesContainer) {
+    badgesContainer.innerHTML = '';
+    BADGES.forEach(badge => {
+      const isUnlocked = appData.savingsTotal > 0 && appData.streakDays >= badge.reqStreak;
+      const badgeEl = document.createElement('div');
+      badgeEl.className = `badge-item ${isUnlocked ? 'unlocked' : ''}`;
+      badgeEl.innerHTML = `
+        <span class="badge-icon">${badge.icon}</span>
+        <div class="badge-name">${badge.name}</div>
+      `;
+      badgesContainer.appendChild(badgeEl);
+    });
+  }
+
+  const historyList = document.getElementById('historyList');
+  if (historyList) {
+    if (appData.expenses.length === 0) {
+      historyList.innerHTML = '<li class="empty-msg">Belum ada pengeluaran dicatat.</li>';
+    } else {
+      historyList.innerHTML = appData.expenses.map(item => `
+        <li class="history-item">
+          <span>${item.title} <small style="color:var(--text-muted)">(${item.date})</small></span>
+          <strong style="color:var(--danger)">- Rp ${item.amount.toLocaleString('id-ID')}</strong>
+        </li>
+      `).join('');
+    }
+  }
+}
+
+// ==========================================
+// 8. UTILITY & PWA
+// ==========================================
+function triggerRewardConfetti() {
+  if (typeof confetti === 'function') {
+    confetti({
+      particleCount: 90,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  }
+}
+
+function initPWA() {
+  updateOnlineStatus();
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Reg Failed', err));
+  }
+}
+
+function updateOnlineStatus
