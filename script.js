@@ -180,11 +180,13 @@ function updateStreak() {
 // 7. RENDER TAMPILAN (UI UPDATE)
 // ==========================================
 function render() {
+  // A. Ringkasan Angka
   const dailyBudget = calculateDailyBudget();
   document.getElementById('dailyBudgetDisplay').textContent = `Rp ${Math.round(dailyBudget).toLocaleString('id-ID')}`;
   document.getElementById('totalSavingsDisplay').textContent = `Rp ${appData.savingsTotal.toLocaleString('id-ID')}`;
   document.getElementById('streakCount').textContent = appData.streakDays;
 
+  // B. Target Name & Persentase
   document.getElementById('targetNameDisplay').textContent = appData.targetName || 'Belum Ada Target';
   
   let progressPercent = 0;
@@ -194,6 +196,7 @@ function render() {
   
   document.getElementById('targetProgressPercent').textContent = `${progressPercent}%`;
   
+  // C. PROGRESS BAR ANIMASI & WARNA DINAMIS
   const progressBar = document.getElementById('targetProgressBar');
   if (progressBar) {
     progressBar.style.width = `${progressPercent}%`;
@@ -207,6 +210,7 @@ function render() {
     }
   }
 
+  // D. Pesta Konfeti 100%
   if (progressPercent >= 100 && !appData.isCelebrated) {
     triggerRewardConfetti();
     appData.isCelebrated = true;
@@ -217,6 +221,7 @@ function render() {
     }, 400);
   }
 
+  // E. Lencana Badges
   const badgesContainer = document.getElementById('badgesContainer');
   if (badgesContainer) {
     badgesContainer.innerHTML = '';
@@ -232,6 +237,7 @@ function render() {
     });
   }
 
+  // F. Riwayat Transaksi
   const historyList = document.getElementById('historyList');
   if (historyList) {
     if (appData.expenses.length === 0) {
