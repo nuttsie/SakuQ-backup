@@ -22,7 +22,7 @@ const BADGES = [
   { id: 'streak_7', name: 'Master 7 Hari', icon: '👑', reqStreak: 7 }
 ];
 
-let deferredPrompt;
+let deferredPrompt = null;
 
 // ==========================================
 // 2. INISIALISASI SAAT HALAMAN DIMUAT
@@ -30,8 +30,8 @@ let deferredPrompt;
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   loadData();
-  initPWA();
   registerEvents();
+  initPWA();
   render();
 });
 
@@ -49,6 +49,14 @@ function updateThemeIcon(theme) {
   if (themeBtn) {
     themeBtn.textContent = theme === 'light' ? '☀️' : '🌙';
   }
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('sakuquest_theme', newTheme);
+  updateThemeIcon(newTheme);
 }
 
 // ==========================================
@@ -73,13 +81,7 @@ function registerEvents() {
   // A. Toggle Tema Gelap / Terang
   const themeBtn = document.getElementById('themeToggleBtn');
   if (themeBtn) {
-    themeBtn.addEventListener('click', () => {
-      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('sakuquest_theme', newTheme);
-      updateThemeIcon(newTheme);
-    });
+    themeBtn.onclick = toggleTheme;
   }
 
   // B. Langkah 1: Form Target Impian
@@ -291,30 +293,36 @@ function initPWA() {
     navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Reg Failed', err));
   }
 
+  const installBtn = document.getElementById('installBtn');
+
+  // Menangkap event install bawaan PWA
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
 
-    const installBtn = document.getElementById('installBtn');
     if (installBtn) {
       installBtn.classList.remove('hidden');
-
-      installBtn.addEventListener('click', () => {
-        installBtn.classList.add('hidden');
-        deferredPrompt.prompt();
-        
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User menginstal aplikasi');
-          }
-          deferredPrompt = null;
-        });
-      });
     }
   });
 
+  if (installBtn) {
+    installBtn.addEventListener('click', () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            installBtn.classList.add('hidden');
+          }
+          deferredPrompt = null;
+        });
+      } else {
+        // Petunjuk manual jika dibuka di PC/Browser yang tidak mendukung prompt otomatis
+        alert('📲 Untuk menginstal di HP:\nBuka via Chrome di HP > Klik Titik 3 di pojok kanan atas > Pilih "Tambahkan ke Layar Utama" / "Add to Home Screen".');
+      }
+    });
+  }
+
   window.addEventListener('appinstalled', () => {
-    const installBtn = document.getElementById('installBtn');
     if (installBtn) installBtn.classList.add('hidden');
     deferredPrompt = null;
   });
@@ -329,4 +337,4 @@ function updateOnlineStatus() {
       notice.classList.add('hidden');
     }
   }
-                              }
+    }
