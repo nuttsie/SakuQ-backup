@@ -1,4 +1,6 @@
-// State Aplikasi
+// ==========================================
+// 1. STATE APLIKASI & KONFIGURASI
+// ==========================================
 let appData = {
   allowance: 0,
   periodDays: 7,
@@ -8,25 +10,47 @@ let appData = {
   savingsTotal: 0,
   expenses: [],
   streakDays: 0,
-  lastStreakDate: null
+  lastStreakDate: null,
+  isCelebrated: false // Penanda agar efek 100% hanya meledak sekali per target
 };
 
-// Lencana (Badges) Config
+// Konfigurasi Lencana (Badges)
 const BADGES = [
   { id: 'first_save', name: 'Nabung Perdana', icon: '🌱', reqStreak: 0 },
   { id: 'streak_3', name: 'Hemat 3 Hari', icon: '⚡', reqStreak: 3 },
   { id: 'streak_7', name: 'Master 7 Hari', icon: '👑', reqStreak: 7 }
 ];
 
-// Inisialisasi Aplikasi Saat Diumuat
+// ==========================================
+// 2. INISIALISASI SAAT HALAMAN DIMUAT
+// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   loadData();
   initPWA();
   registerEvents();
   render();
 });
 
-// Load Data dari LocalStorage
+// ==========================================
+// 3. FITUR TEMA (DARK / LIGHT MODE)
+// ==========================================
+function initTheme() {
+  const savedTheme = localStorage.getItem('sakuquest_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon(savedTheme);
+}
+
+function updateThemeIcon(theme) {
+  const themeBtn = document.getElementById('themeToggleBtn');
+  if (themeBtn) {
+    themeBtn.textContent = theme === 'light' ? '☀️' : '🌙';
+  }
+}
+
+// ==========================================
+// 4. PENYIMPANAN DATA (LOCALSTORAGE)
+// ==========================================
 function loadData() {
   const saved = localStorage.getItem('sakuquest_data');
   if (saved) {
@@ -34,15 +58,28 @@ function loadData() {
   }
 }
 
-// Simpan Data ke LocalStorage
 function saveData() {
   localStorage.setItem('sakuquest_data', JSON.stringify(appData));
   render();
 }
 
-// Event Listeners
+// ==========================================
+// 5. EVENT LISTENERS & FORM HANDLING
+// ==========================================
 function registerEvents() {
-  // 1. Form Target Impian (Langkah 1)
+  // A. Toggle Tema Gelap / Terang
+  const themeBtn = document.getElementById('themeToggleBtn');
+  if (themeBtn) {
+    themeBtn.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('sakuquest_theme', newTheme);
+      updateThemeIcon(newTheme);
+    });
+  }
+
+  // B. Langkah 1: Form Target Impian
   const targetForm = document.getElementById('targetForm');
   if (targetForm) {
     targetForm.addEventListener('submit', (e) => {
@@ -52,13 +89,14 @@ function registerEvents() {
 
       appData.targetName = targetName;
       appData.targetAmount = targetAmount;
+      appData.isCelebrated = false; // Reset penanda perayaan untuk target baru
 
       saveData();
-      alert(`Target "${targetName}" berhasil dibuat! Sekarang atur uang sakumu di Langkah 2.`);
+      alert(`🎯 Target "${targetName}" berhasil dibuat! Sekarang atur uang sakumu di Langkah 2.`);
     });
   }
 
-  // 2. Form Uang Saku & Auto-Save (Langkah 2)
+  // C. Langkah 2: Form Uang Saku & Auto-Save
   const allowanceForm = document.getElementById('allowanceForm');
   if (allowanceForm) {
     allowanceForm.addEventListener('submit', (e) => {
@@ -67,20 +105,20 @@ function registerEvents() {
       const periodDays = parseInt(document.getElementById('periodSelect').value) || 7;
       const autoSavePercent = parseFloat(document.getElementById('autoSavePercent').value) || 0;
 
-      // Hitung potongan Auto-Save
+      // Logika Kalkulasi Auto-Save di Awal (Pay Yourself First)
       const autoSavedAmount = (allowance * autoSavePercent) / 100;
       
-      appData.allowance = allowance - autoSavedAmount; // Sisa uang jajan
+      appData.allowance = allowance - autoSavedAmount; // Sisa uang jajan murni
       appData.periodDays = periodDays;
       appData.autoSavePercent = autoSavePercent;
-      appData.savingsTotal += autoSavedAmount; // Masuk brankas tabungan
+      appData.savingsTotal += autoSavedAmount; // Langsung dialokasikan ke brankas tabungan
 
       saveData();
-      alert(`Uang saku diatur! Rp ${autoSavedAmount.toLocaleString('id-ID')} masuk ke tabungan target "${appData.targetName || 'Impian'}".`);
+      alert(`💰 Uang saku diatur! Rp ${autoSavedAmount.toLocaleString('id-ID')} berhasil dipindahkan ke tabungan target "${appData.targetName || 'Impian'}".`);
     });
   }
 
-  // 3. Form Pengeluaran
+  // D. Form Catat Pengeluaran Harian
   const expenseForm = document.getElementById('expenseForm');
   if (expenseForm) {
     expenseForm.addEventListener('submit', (e) => {
@@ -102,110 +140,23 @@ function registerEvents() {
     });
   }
 
-  // 4. Reset Data
+  // E. Tombol Reset Semua Data
   const resetBtn = document.getElementById('resetDataBtn');
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
-      if (confirm('Apakah Anda yakin ingin menghapus seluruh data?')) {
+      if (confirm('Apakah Anda yakin ingin menghapus seluruh data SakuQuest?')) {
         localStorage.removeItem('sakuquest_data');
         location.reload();
       }
     });
   }
 
-  // Status Online/Offline Detector
+  // F. Detektor Mode Online / Offline
   window.addEventListener('online', updateOnlineStatus);
   window.addEventListener('offline', updateOnlineStatus);
 }
 
-// Kalkulasi Sisa Uang Jajan Harian
-function calculateDailyBudget() {
-  if (appData.allowance <= 0) return 0;
-  
-  const totalSpent = appData.expenses.reduce((sum, item) => sum + item.amount, 0);
-  const remainingBudget = appData.allowance - totalSpent;
-  const dailyLimit = remainingBudget / appData.periodDays;
-
-  return dailyLimit > 0 ? dailyLimit : 0;
-}
-
-// Logika Perkembangan Streak
-function updateStreak() {
-  const today = new Date().toDateString();
-  if (appData.lastStreakDate !== today) {
-    appData.streakDays += 1;
-    appData.lastStreakDate = today;
-  }
-}
-
-// Render Antarmuka (UI)
-function render() {
-  // Render Ringkasan
-  const dailyBudget = calculateDailyBudget();
-  document.getElementById('dailyBudgetDisplay').textContent = `Rp ${Math.round(dailyBudget).toLocaleString('id-ID')}`;
-  document.getElementById('totalSavingsDisplay').textContent = `Rp ${appData.savingsTotal.toLocaleString('id-ID')}`;
-  document.getElementById('streakCount').textContent = appData.streakDays;
-
-  // Render Target Progress
-  document.getElementById('targetNameDisplay').textContent = appData.targetName || 'Belum Ada Target';
-  let progressPercent = 0;
-  if (appData.targetAmount > 0) {
-    progressPercent = Math.min(100, Math.round((appData.savingsTotal / appData.targetAmount) * 100));
-  }
-  document.getElementById('targetProgressPercent').textContent = `${progressPercent}%`;
-  
-  const progressBar = document.getElementById('targetProgressBar');
-  if (progressBar) {
-    progressBar.style.width = `${progressPercent}%`;
-  }
-
-  // Render Badges
-  const badgesContainer = document.getElementById('badgesContainer');
-  if (badgesContainer) {
-    badgesContainer.innerHTML = '';
-    BADGES.forEach(badge => {
-      const isUnlocked = appData.savingsTotal > 0 && appData.streakDays >= badge.reqStreak;
-      const badgeEl = document.createElement('div');
-      badgeEl.className = `badge-item ${isUnlocked ? 'unlocked' : ''}`;
-      badgeEl.innerHTML = `
-        <span class="badge-icon">${badge.icon}</span>
-        <div class="badge-name">${badge.name}</div>
-      `;
-      badgesContainer.appendChild(badgeEl);
-    });
-  }
-
-  // Render Riwayat
-  const historyList = document.getElementById('historyList');
-  if (historyList) {
-    if (appData.expenses.length === 0) {
-      historyList.innerHTML = '<li class="empty-msg">Belum ada pengeluaran dicatat.</li>';
-    } else {
-      historyList.innerHTML = appData.expenses.map(item => `
-        <li class="history-item">
-          <span>${item.title} <small style="color:#94a3b8">(${item.date})</small></span>
-          <strong style="color:#ef4444">- Rp ${item.amount.toLocaleString('id-ID')}</strong>
-        </li>
-      `).join('');
-    }
-  }
-}
-
-// Inisialisasi Fitur Offline PWA
-function initPWA() {
-  updateOnlineStatus();
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Reg Failed', err));
-  }
-}
-
-function updateOnlineStatus() {
-  const notice = document.getElementById('offlineNotice');
-  if (notice) {
-    if (!navigator.onLine) {
-      notice.classList.remove('hidden');
-    } else {
-      notice.classList.add('hidden');
-    }
-  }
-}
+// ==========================================
+// 6. LOGIKA KALKULASI & STREAK
+// ==========================================
+function calculateDailyBudget
