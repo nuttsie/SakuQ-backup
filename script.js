@@ -7,6 +7,7 @@ let appData = {
   autoSavePercent: 10,
   targetName: '',
   targetAmount: 0,
+  targetLink: '',
   savingsTotal: 0,
   expenses: [],
   streakDays: 0,
@@ -20,6 +21,8 @@ const BADGES = [
   { id: 'streak_3', name: 'Hemat 3 Hari', icon: '⚡', reqStreak: 3 },
   { id: 'streak_7', name: 'Master 7 Hari', icon: '👑', reqStreak: 7 }
 ];
+
+let deferredPrompt;
 
 // ==========================================
 // 2. INISIALISASI SAAT HALAMAN DIMUAT
@@ -86,13 +89,15 @@ function registerEvents() {
       e.preventDefault();
       const targetName = document.getElementById('targetNameInput').value;
       const targetAmount = parseFloat(document.getElementById('targetAmountInput').value) || 0;
+      const targetLink = document.getElementById('targetLinkInput').value;
 
       appData.targetName = targetName;
       appData.targetAmount = targetAmount;
+      appData.targetLink = targetLink;
       appData.isCelebrated = false;
 
       saveData();
-      alert(`🎯 Target "${targetName}" berhasil dibuat! Sekarang atur uang sakumu di Langkah 2.`);
+      alert(`🎯 Target "${targetName}" berhasil disimpan! Sekarang atur uang sakumu di Langkah 2.`);
     });
   }
 
@@ -186,100 +191,6 @@ function render() {
   document.getElementById('totalSavingsDisplay').textContent = `Rp ${appData.savingsTotal.toLocaleString('id-ID')}`;
   document.getElementById('streakCount').textContent = appData.streakDays;
 
-  // B. Target Name & Persentase
-  document.getElementById('targetNameDisplay').textContent = appData.targetName || 'Belum Ada Target';
-  
-  let progressPercent = 0;
-  if (appData.targetAmount > 0) {
-    progressPercent = Math.min(100, Math.round((appData.savingsTotal / appData.targetAmount) * 100));
-  }
-  
-  document.getElementById('targetProgressPercent').textContent = `${progressPercent}%`;
-  
-  // C. PROGRESS BAR ANIMASI & WARNA DINAMIS
-  const progressBar = document.getElementById('targetProgressBar');
-  if (progressBar) {
-    progressBar.style.width = `${progressPercent}%`;
-    
-    if (progressPercent < 30) {
-      progressBar.style.background = 'linear-gradient(90deg, #ef4444, #f87171)';
-    } else if (progressPercent <= 70) {
-      progressBar.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24)';
-    } else {
-      progressBar.style.background = 'linear-gradient(90deg, #10b981, #34d399)';
-    }
-  }
-
-  // D. Pesta Konfeti 100%
-  if (progressPercent >= 100 && !appData.isCelebrated) {
-    triggerRewardConfetti();
-    appData.isCelebrated = true;
-    localStorage.setItem('sakuquest_data', JSON.stringify(appData));
-    
-    setTimeout(() => {
-      alert(`🎉 SELAMAT! Target kamu "${appData.targetName}" senilai Rp ${appData.targetAmount.toLocaleString('id-ID')} SUDAH TERCAPAI! Kamu keren banget! 🙌`);
-    }, 400);
-  }
-
-  // E. Lencana Badges
-  const badgesContainer = document.getElementById('badgesContainer');
-  if (badgesContainer) {
-    badgesContainer.innerHTML = '';
-    BADGES.forEach(badge => {
-      const isUnlocked = appData.savingsTotal > 0 && appData.streakDays >= badge.reqStreak;
-      const badgeEl = document.createElement('div');
-      badgeEl.className = `badge-item ${isUnlocked ? 'unlocked' : ''}`;
-      badgeEl.innerHTML = `
-        <span class="badge-icon">${badge.icon}</span>
-        <div class="badge-name">${badge.name}</div>
-      `;
-      badgesContainer.appendChild(badgeEl);
-    });
-  }
-
-  // F. Riwayat Transaksi
-  const historyList = document.getElementById('historyList');
-  if (historyList) {
-    if (appData.expenses.length === 0) {
-      historyList.innerHTML = '<li class="empty-msg">Belum ada pengeluaran dicatat.</li>';
-    } else {
-      historyList.innerHTML = appData.expenses.map(item => `
-        <li class="history-item">
-          <span>${item.title} <small style="color:var(--text-muted)">(${item.date})</small></span>
-          <strong style="color:var(--danger)">- Rp ${item.amount.toLocaleString('id-ID')}</strong>
-        </li>
-      `).join('');
-    }
-  }
-}
-
-// ==========================================
-// 8. UTILITY & PWA
-// ==========================================
-function triggerRewardConfetti() {
-  if (typeof confetti === 'function') {
-    confetti({
-      particleCount: 90,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
-  }
-}
-
-function initPWA() {
-  updateOnlineStatus();
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Reg Failed', err));
-  }
-}
-
-function updateOnlineStatus() {
-  const notice = document.getElementById('offlineNotice');
-  if (notice) {
-    if (!navigator.onLine) {
-      notice.classList.remove('hidden');
-    } else {
-      notice.classList.add('hidden');
-    }
-  }
-}
+  // B. Target Name (dengan link jika ada)
+  const targetNameEl = document.getElementById('targetNameDisplay');
+  if (targetNameEl)
