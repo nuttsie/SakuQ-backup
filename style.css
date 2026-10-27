@@ -120,7 +120,7 @@ body {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 /* ==========================================
@@ -186,6 +186,7 @@ body {
 .target-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 0.85rem;
   margin-bottom: 8px;
   color: var(--text-color);
