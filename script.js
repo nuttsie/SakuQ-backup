@@ -193,4 +193,140 @@ function render() {
 
   // B. Target Name (dengan link jika ada)
   const targetNameEl = document.getElementById('targetNameDisplay');
-  if (targetNameEl)
+  if (targetNameEl) {
+    if (appData.targetLink) {
+      targetNameEl.innerHTML = `<a href="${appData.targetLink}" target="_blank" style="color: var(--primary); text-decoration: underline;">${appData.targetName} 🔗</a>`;
+    } else {
+      targetNameEl.textContent = appData.targetName || 'Belum Ada Target';
+    }
+  }
+
+  // C. Display Nominal Terkumpul vs Target
+  const targetAmountEl = document.getElementById('targetAmountDisplay');
+  if (targetAmountEl) {
+    targetAmountEl.textContent = `Rp ${appData.savingsTotal.toLocaleString('id-ID')} / Rp ${appData.targetAmount.toLocaleString('id-ID')}`;
+  }
+
+  // D. Hitung Persentase & Progress Bar Dinamis
+  let progressPercent = 0;
+  if (appData.targetAmount > 0) {
+    progressPercent = Math.min(100, Math.round((appData.savingsTotal / appData.targetAmount) * 100));
+  }
+  
+  document.getElementById('targetProgressPercent').textContent = `${progressPercent}%`;
+  
+  const progressBar = document.getElementById('targetProgressBar');
+  if (progressBar) {
+    progressBar.style.width = `${progressPercent}%`;
+    
+    if (progressPercent < 30) {
+      progressBar.style.background = 'linear-gradient(90deg, #ef4444, #f87171)';
+    } else if (progressPercent <= 70) {
+      progressBar.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24)';
+    } else {
+      progressBar.style.background = 'linear-gradient(90deg, #10b981, #34d399)';
+    }
+  }
+
+  // E. Pesta Konfeti 100%
+  if (progressPercent >= 100 && !appData.isCelebrated) {
+    triggerRewardConfetti();
+    appData.isCelebrated = true;
+    localStorage.setItem('sakuquest_data', JSON.stringify(appData));
+    
+    setTimeout(() => {
+      alert(`🎉 SELAMAT! Target kamu "${appData.targetName}" senilai Rp ${appData.targetAmount.toLocaleString('id-ID')} SUDAH TERCAPAI! Kamu keren banget! 🙌`);
+    }, 400);
+  }
+
+  // F. Lencana Badges
+  const badgesContainer = document.getElementById('badgesContainer');
+  if (badgesContainer) {
+    badgesContainer.innerHTML = '';
+    BADGES.forEach(badge => {
+      const isUnlocked = appData.savingsTotal > 0 && appData.streakDays >= badge.reqStreak;
+      const badgeEl = document.createElement('div');
+      badgeEl.className = `badge-item ${isUnlocked ? 'unlocked' : ''}`;
+      badgeEl.innerHTML = `
+        <span class="badge-icon">${badge.icon}</span>
+        <div class="badge-name">${badge.name}</div>
+      `;
+      badgesContainer.appendChild(badgeEl);
+    });
+  }
+
+  // G. Riwayat Transaksi
+  const historyList = document.getElementById('historyList');
+  if (historyList) {
+    if (appData.expenses.length === 0) {
+      historyList.innerHTML = '<li class="empty-msg">Belum ada pengeluaran dicatat.</li>';
+    } else {
+      historyList.innerHTML = appData.expenses.map(item => `
+        <li class="history-item">
+          <span>${item.title} <small style="color:var(--text-muted)">(${item.date})</small></span>
+          <strong style="color:var(--danger)">- Rp ${item.amount.toLocaleString('id-ID')}</strong>
+        </li>
+      `).join('');
+    }
+  }
+}
+
+// ==========================================
+// 8. UTILITY & PWA (OFFLINE & INSTALL)
+// ==========================================
+function triggerRewardConfetti() {
+  if (typeof confetti === 'function') {
+    confetti({
+      particleCount: 90,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  }
+}
+
+function initPWA() {
+  updateOnlineStatus();
+  
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Reg Failed', err));
+  }
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    const installBtn = document.getElementById('installBtn');
+    if (installBtn) {
+      installBtn.classList.remove('hidden');
+
+      installBtn.addEventListener('click', () => {
+        installBtn.classList.add('hidden');
+        deferredPrompt.prompt();
+        
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User menginstal aplikasi');
+          }
+          deferredPrompt = null;
+        });
+      });
+    }
+  });
+
+  window.addEventListener('appinstalled', () => {
+    const installBtn = document.getElementById('installBtn');
+    if (installBtn) installBtn.classList.add('hidden');
+    deferredPrompt = null;
+  });
+}
+
+function updateOnlineStatus() {
+  const notice = document.getElementById('offlineNotice');
+  if (notice) {
+    if (!navigator.onLine) {
+      notice.classList.remove('hidden');
+    } else {
+      notice.classList.add('hidden');
+    }
+  }
+                              }
