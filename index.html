@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SakuQ - Hemat & Nabung Seru</title>
-  <link rel="stylesheet" href="style.css?v=6">
+  <link rel="stylesheet" href="style.css?v=7">
+  <!-- Pustaka Efek Konfeti saat 100% -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
@@ -17,7 +18,9 @@
       </div>
       
       <div class="header-actions">
+        <!-- Tombol Switch Tema -->
         <button id="themeToggleBtn" class="theme-btn" title="Ubah Tema">🌙</button>
+        
         <div class="streak-badge" id="streakBadge" title="Streak Hari Hemat">
           🔥 <span id="streakCount">0</span> Hari
         </div>
@@ -113,7 +116,9 @@
       <!-- Badges -->
       <section class="card">
         <h3>Lencana Pencapaian</h3>
-        <div class="badges-grid" id="badgesContainer"></div>
+        <div class="badges-grid" id="badgesContainer">
+          <!-- Generasi Badge via JS -->
+        </div>
       </section>
 
       <!-- Riwayat Transaksi -->
@@ -126,7 +131,7 @@
       </section>
     </main>
 
-    <!-- NAVIGASI TAB BAWAH -->
+    <!-- NAVIGASI TAB BAWAH (BOTTOM NAV) -->
     <nav class="bottom-nav">
       <button class="nav-item active" id="navHomeBtn">
         <span class="nav-icon">🏠</span>
