@@ -15,6 +15,7 @@ let appData = {
   isCelebrated: false
 };
 
+// Konfigurasi Lencana (Badges)
 const BADGES = [
   { id: 'first_save', name: 'Nabung Perdana', icon: '🌱', reqStreak: 0 },
   { id: 'streak_3', name: 'Hemat 3 Hari', icon: '⚡', reqStreak: 3 },
@@ -131,7 +132,7 @@ function registerEvents() {
     }
   });
 
-  // A. Form Target Impian (Langkah 1)
+  // A. Form Target Impian
   const targetForm = document.getElementById('targetForm');
   if (targetForm) {
     targetForm.addEventListener('submit', (e) => {
@@ -146,11 +147,11 @@ function registerEvents() {
       appData.isCelebrated = false;
 
       saveData();
-      alert(`🎯 Target "${targetName}" disimpan! Lanjut atur uang saku di Langkah 2.`);
+      alert(`🎯 Target "${targetName}" berhasil disimpan!`);
     });
   }
 
-  // B. Form Uang Saku (Langkah 2)
+  // B. Form Uang Saku
   const allowanceForm = document.getElementById('allowanceForm');
   if (allowanceForm) {
     allowanceForm.addEventListener('submit', (e) => {
@@ -167,7 +168,7 @@ function registerEvents() {
       appData.savingsTotal += autoSavedAmount;
 
       saveData();
-      alert(`💰 Uang saku diatur! Rp ${autoSavedAmount.toLocaleString('id-ID')} masuk ke tabungan.`);
+      alert(`💰 Uang saku diatur! Rp ${autoSavedAmount.toLocaleString('id-ID')} tersimpan.`);
     });
   }
 
@@ -288,7 +289,7 @@ function render() {
     localStorage.setItem('sakuquest_data', JSON.stringify(appData));
     
     setTimeout(() => {
-      alert(`🎉 SELAMAT! Target kamu "${appData.targetName}" senilai Rp ${appData.targetAmount.toLocaleString('id-ID')} SUDAH TERCAPAI! Kamu keren banget! 🙌`);
+      alert(`🎉 SELAMAT! Target kamu "${appData.targetName}" senilai Rp ${appData.targetAmount.toLocaleString('id-ID')} SUDAH TERCAPAI! 🙌`);
     }, 400);
   }
 
@@ -335,4 +336,4 @@ function triggerRewardConfetti() {
       origin: { y: 0.6 }
     });
   }
-  }
+}
