@@ -15,7 +15,6 @@ let appData = {
   isCelebrated: false
 };
 
-// Konfigurasi Lencana (Badges)
 const BADGES = [
   { id: 'first_save', name: 'Nabung Perdana', icon: '🌱', reqStreak: 0 },
   { id: 'streak_3', name: 'Hemat 3 Hari', icon: '⚡', reqStreak: 3 },
@@ -94,13 +93,11 @@ function saveData() {
 // 6. EVENT LISTENERS & FORM HANDLING
 // ==========================================
 function registerEvents() {
-  // A. Toggle Tema Gelap / Terang
   const themeBtn = document.getElementById('themeToggleBtn');
   if (themeBtn) {
     themeBtn.onclick = toggleTheme;
   }
 
-  // B. Pasang Format Rupiah Otomatis ke Input Nominal
   const rupiahInputs = ['targetAmountInput', 'allowanceInput', 'expenseAmount'];
   rupiahInputs.forEach(id => {
     const inputEl = document.getElementById(id);
@@ -109,7 +106,7 @@ function registerEvents() {
     }
   });
 
-  // C. Langkah 1: Form Target Impian
+  // A. Form Target Impian (Langkah 1)
   const targetForm = document.getElementById('targetForm');
   if (targetForm) {
     targetForm.addEventListener('submit', (e) => {
@@ -124,11 +121,11 @@ function registerEvents() {
       appData.isCelebrated = false;
 
       saveData();
-      alert(`🎯 Target "${targetName}" berhasil disimpan! Sekarang atur uang sakumu di Langkah 2.`);
+      alert(`🎯 Target "${targetName}" berhasil disimpan! Silakan lanjut ke Langkah 2 (Atur Uang Saku).`);
     });
   }
 
-  // D. Langkah 2: Form Uang Saku & Auto-Save
+  // B. Form Uang Saku (Langkah 2)
   const allowanceForm = document.getElementById('allowanceForm');
   if (allowanceForm) {
     allowanceForm.addEventListener('submit', (e) => {
@@ -145,11 +142,11 @@ function registerEvents() {
       appData.savingsTotal += autoSavedAmount;
 
       saveData();
-      alert(`💰 Uang saku diatur! Rp ${autoSavedAmount.toLocaleString('id-ID')} berhasil dipindahkan ke tabungan target "${appData.targetName || 'Impian'}".`);
+      alert(`💰 Uang saku diatur! Rp ${autoSavedAmount.toLocaleString('id-ID')} otomatis ditabung ke target impian.`);
     });
   }
 
-  // E. Form Catat Pengeluaran Harian
+  // C. Form Catat Pengeluaran
   const expenseForm = document.getElementById('expenseForm');
   if (expenseForm) {
     expenseForm.addEventListener('submit', (e) => {
@@ -171,7 +168,7 @@ function registerEvents() {
     });
   }
 
-  // F. Tombol Reset Semua Data
+  // D. Tombol Reset
   const resetBtn = document.getElementById('resetDataBtn');
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
@@ -184,7 +181,7 @@ function registerEvents() {
 }
 
 // ==========================================
-// 7. LOGIKA KALKULASI & STREAK AKURAT
+// 7. KALKULASI & STREAK
 // ==========================================
 function calculateDailyBudget() {
   if (appData.allowance <= 0) return 0;
@@ -198,7 +195,6 @@ function calculateDailyBudget() {
 
 function updateStreak() {
   const today = new Date().toLocaleDateString('id-ID');
-  
   const todayExpenses = appData.expenses
     .filter(item => item.date === today)
     .reduce((sum, item) => sum + item.amount, 0);
@@ -217,16 +213,47 @@ function updateStreak() {
 }
 
 // ==========================================
-// 8. RENDER TAMPILAN (UI UPDATE)
+// 8. RENDER TAMPILAN & LOGIKA BERTAHAP
 // ==========================================
 function render() {
-  // A. Ringkasan Angka
+  // --- A. KONTROL PROGRESSIVE DISCLOSURE (BERTAHAP) ---
+  const step1Card = document.getElementById('step1Card');
+  const step2Card = document.getElementById('step2Card');
+  const expenseCard = document.getElementById('expenseCard');
+  const extraContent = document.getElementById('extraContent');
+
+  // Cek apakah Langkah 1 (Target) sudah diisi
+  const hasTarget = appData.targetAmount > 0;
+  // Cek apakah Langkah 2 (Uang Saku) sudah diisi
+  const hasAllowance = appData.allowance > 0 || appData.savingsTotal > 0;
+
+  if (!hasTarget) {
+    // Baru pertama kali buka: HANYA TAMPILKAN LANGKAH 1
+    step1Card.classList.remove('hidden-step');
+    step2Card.classList.add('hidden-step');
+    expenseCard.classList.add('hidden-step');
+    extraContent.classList.add('hidden-step');
+  } else if (hasTarget && !hasAllowance) {
+    // Target sudah ada, tapi belum set Uang Saku: TAMPILKAN LANGKAH 2
+    step1Card.classList.add('hidden-step');
+    step2Card.classList.remove('hidden-step');
+    expenseCard.classList.add('hidden-step');
+    extraContent.classList.add('hidden-step');
+  } else {
+    // Semua setup selesai: TAMPILKAN CATAT PENGELUARAN & RIWAYAT
+    step1Card.classList.add('hidden-step');
+    step2Card.classList.add('hidden-step');
+    expenseCard.classList.remove('hidden-step');
+    extraContent.classList.remove('hidden-step');
+  }
+
+  // --- B. RENDER RINGKASAN ANGKA ---
   const dailyBudget = calculateDailyBudget();
   document.getElementById('dailyBudgetDisplay').textContent = `Rp ${Math.round(dailyBudget).toLocaleString('id-ID')}`;
   document.getElementById('totalSavingsDisplay').textContent = `Rp ${appData.savingsTotal.toLocaleString('id-ID')}`;
   document.getElementById('streakCount').textContent = appData.streakDays;
 
-  // B. Target Name (dengan link jika ada)
+  // --- C. RENDER TARGET ---
   const targetNameEl = document.getElementById('targetNameDisplay');
   if (targetNameEl) {
     if (appData.targetLink) {
@@ -236,13 +263,11 @@ function render() {
     }
   }
 
-  // C. Display Nominal Terkumpul vs Target
   const targetAmountEl = document.getElementById('targetAmountDisplay');
   if (targetAmountEl) {
     targetAmountEl.textContent = `Rp ${appData.savingsTotal.toLocaleString('id-ID')} / Rp ${appData.targetAmount.toLocaleString('id-ID')}`;
   }
 
-  // D. Hitung Persentase & Progress Bar Dinamis
   let progressPercent = 0;
   if (appData.targetAmount > 0) {
     progressPercent = Math.min(100, Math.round((appData.savingsTotal / appData.targetAmount) * 100));
@@ -253,7 +278,6 @@ function render() {
   const progressBar = document.getElementById('targetProgressBar');
   if (progressBar) {
     progressBar.style.width = `${progressPercent}%`;
-    
     if (progressPercent < 30) {
       progressBar.style.background = 'linear-gradient(90deg, #ef4444, #f87171)';
     } else if (progressPercent <= 70) {
@@ -263,7 +287,7 @@ function render() {
     }
   }
 
-  // E. Pesta Konfeti 100%
+  // --- D. EFEK SELEBRASI 100% ---
   if (progressPercent >= 100 && !appData.isCelebrated) {
     triggerRewardConfetti();
     appData.isCelebrated = true;
@@ -274,7 +298,7 @@ function render() {
     }, 400);
   }
 
-  // F. Lencana Badges
+  // --- E. RENDER LENCANA ---
   const badgesContainer = document.getElementById('badgesContainer');
   if (badgesContainer) {
     badgesContainer.innerHTML = '';
@@ -290,7 +314,7 @@ function render() {
     });
   }
 
-  // G. Riwayat Transaksi
+  // --- F. RENDER RIWAYAT ---
   const historyList = document.getElementById('historyList');
   if (historyList) {
     if (appData.expenses.length === 0) {
@@ -317,4 +341,4 @@ function triggerRewardConfetti() {
       origin: { y: 0.6 }
     });
   }
-    }
+                                                                                                                                             }
