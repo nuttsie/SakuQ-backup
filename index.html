@@ -4,8 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SakuQ - Hemat & Nabung Seru</title>
-  <link rel="stylesheet" href="style.css?v=2">
-  <!-- Pustaka Efek Konfeti saat 100% -->
+  <link rel="stylesheet" href="style.css?v=4">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
@@ -18,16 +17,14 @@
       </div>
       
       <div class="header-actions">
-        <!-- Tombol Switch Tema -->
         <button id="themeToggleBtn" class="theme-btn" title="Ubah Tema">🌙</button>
-        
         <div class="streak-badge" id="streakBadge" title="Streak Hari Hemat">
           🔥 <span id="streakCount">0</span> Hari
         </div>
       </div>
     </header>
 
-    <!-- Overview Card (Status Keuangan) -->
+    <!-- Ringkasan Saku (Selalu Tampak) -->
     <section class="card summary-card">
       <h2>Ringkasan Saku</h2>
       <div class="grid-2">
@@ -56,8 +53,8 @@
       </div>
     </section>
 
-    <!-- Kartu 1: Form Target Impian -->
-    <section class="card">
+    <!-- KARTU 1: Form Target Impian (Langkah Pertama) -->
+    <section class="card" id="step1Card">
       <h3>🎯 Langkah 1: Set Target Impian</h3>
       <form id="targetForm" class="form-group">
         <label for="targetNameInput">Nama Barang / Impian</label>
@@ -76,8 +73,8 @@
       </form>
     </section>
 
-    <!-- Kartu 2: Form Uang Saku & Auto-Save -->
-    <section class="card">
+    <!-- KARTU 2: Form Uang Saku & Auto-Save (Awalnya Tersembunyi) -->
+    <section class="card hidden-step" id="step2Card">
       <h3>💰 Langkah 2: Atur Uang Saku</h3>
       <form id="allowanceForm" class="form-group">
         <label for="allowanceInput">Nominal Uang Saku (Rp)</label>
@@ -97,8 +94,8 @@
       </form>
     </section>
 
-    <!-- Form Tambah Transaksi -->
-    <section class="card">
+    <!-- KARTU 3: Form Catat Pengeluaran (Awalnya Tersembunyi) -->
+    <section class="card hidden-step" id="expenseCard">
       <h3>➕ Catat Pengeluaran</h3>
       <form id="expenseForm" class="form-group">
         <label for="expenseTitle">Keterangan / Jajanan</label>
@@ -111,22 +108,23 @@
       </form>
     </section>
 
-    <!-- Lencana / Badges -->
-    <section class="card">
-      <h3>🏆 Lencana Pencapaian</h3>
-      <div class="badges-grid" id="badgesContainer">
-        <!-- Generasi Badge via JS -->
-      </div>
-    </section>
+    <!-- KARTU 4: Lencana & Riwayat (Awalnya Tersembunyi) -->
+    <div id="extraContent" class="hidden-step">
+      <section class="card">
+        <h3>🏆 Lencana Pencapaian</h3>
+        <div class="badges-grid" id="badgesContainer">
+          <!-- Generasi Badge via JS -->
+        </div>
+      </section>
 
-    <!-- Riwayat Transaksi -->
-    <section class="card">
-      <h3>📜 Riwayat Pengeluaran</h3>
-      <ul class="history-list" id="historyList">
-        <li class="empty-msg">Belum ada pengeluaran dicatat.</li>
-      </ul>
-      <button id="resetDataBtn" class="btn btn-danger">Reset Semua Data</button>
-    </section>
+      <section class="card" style="margin-top: 10px;">
+        <h3>📜 Riwayat Pengeluaran</h3>
+        <ul class="history-list" id="historyList">
+          <li class="empty-msg">Belum ada pengeluaran dicatat.</li>
+        </ul>
+        <button id="resetDataBtn" class="btn btn-danger">Reset Semua Data</button>
+      </section>
+    </div>
   </div>
 
   <script src="script.js"></script>
