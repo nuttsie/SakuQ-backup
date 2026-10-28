@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SakuQ - Hemat & Nabung Seru</title>
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=6">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
@@ -24,7 +24,7 @@
       </div>
     </header>
 
-    <!-- TAB 1: BERANDA (Halaman Utamaku) -->
+    <!-- TAB 1: BERANDA -->
     <main id="tabHome" class="tab-content active-tab">
       <!-- Ringkasan Saku -->
       <section class="card summary-card">
@@ -57,73 +57,68 @@
 
       <!-- Form Catat Pengeluaran -->
       <section class="card">
-        <h3>➕ Catat Pengeluaran</h3>
+        <h3>Catat Pengeluaran</h3>
         <form id="expenseForm" class="form-group">
-          <label for="expenseTitle">Keterangan / Jajanan</label>
-          <input type="text" id="expenseTitle" placeholder="Contoh: Es Boba / Cilok" required>
+          <label for="expenseTitle">Nama Pengeluaran</label>
+          <input type="text" id="expenseTitle" placeholder="Misal: Es Boba" required>
 
-          <label for="expenseAmount">Nominal (Rp)</label>
+          <label for="expenseAmount">Nominal</label>
           <input type="text" id="expenseAmount" inputmode="numeric" placeholder="Rp 0" required>
 
-          <button type="submit" class="btn btn-action">Catat Pengeluaran</button>
+          <button type="submit" class="btn btn-action">Simpan Pengeluaran</button>
         </form>
       </section>
     </main>
 
-    <!-- TAB 2: PENCAPAIAN & PENGATURAN -->
+    <!-- TAB 2: TARGET & BADGES -->
     <main id="tabSettings" class="tab-content">
-      <!-- Langkah 1: Form Target Impian -->
+      <!-- Form Target Impian -->
       <section class="card">
-        <h3>🎯 Langkah 1: Set Target Impian</h3>
+        <h3>Target Impian</h3>
         <form id="targetForm" class="form-group">
-          <label for="targetNameInput">Nama Barang / Impian</label>
-          <input type="text" id="targetNameInput" placeholder="Contoh: Beli Sepatu Baru" required>
+          <label for="targetNameInput">Nama Target</label>
+          <input type="text" id="targetNameInput" placeholder="Misal: Sepatu Baru" required>
 
-          <label for="targetAmountInput">Nominal Target (Rp)</label>
+          <label for="targetAmountInput">Nominal Target</label>
           <input type="text" id="targetAmountInput" inputmode="numeric" placeholder="Rp 0" required>
 
-          <label for="targetLinkInput">Link Barang (Opsional)</label>
-          <input type="url" id="targetLinkInput" placeholder="https://tokopedia.link/... atau shopee.co.id/...">
-          <small style="font-size: 0.75rem; color: var(--text-muted); margin-top: -4px; display: block;">
-            💡 <i>Catatan: Masukkan link toko online agar kamu bisa mengecek produknya sewaktu-waktu.</i>
-          </small>
+          <label for="targetLinkInput">Link Produk (Opsional)</label>
+          <input type="url" id="targetLinkInput" placeholder="https://tokopedia.com/...">
 
           <button type="submit" class="btn btn-primary">Simpan Target</button>
         </form>
       </section>
 
-      <!-- Langkah 2: Form Uang Saku -->
+      <!-- Form Uang Saku -->
       <section class="card">
-        <h3>💰 Langkah 2: Atur Uang Saku</h3>
+        <h3>Atur Uang Saku</h3>
         <form id="allowanceForm" class="form-group">
-          <label for="allowanceInput">Nominal Uang Saku (Rp)</label>
+          <label for="allowanceInput">Nominal Uang Saku</label>
           <input type="text" id="allowanceInput" inputmode="numeric" placeholder="Rp 0" required>
 
-          <label for="periodSelect">Periode Uang Saku</label>
+          <label for="periodSelect">Periode</label>
           <select id="periodSelect">
             <option value="1">Harian (1 Hari)</option>
             <option value="7" selected>Mingguan (7 Hari)</option>
             <option value="30">Bulanan (30 Hari)</option>
           </select>
 
-          <label for="autoSavePercent">Alokasi Auto-Save (%)</label>
+          <label for="autoSavePercent">Auto-Save (%)</label>
           <input type="number" id="autoSavePercent" value="10" min="0" max="50">
 
-          <button type="submit" class="btn btn-action">Set Uang Saku & Nabung</button>
+          <button type="submit" class="btn btn-action">Simpan Uang Saku</button>
         </form>
       </section>
 
       <!-- Badges -->
       <section class="card">
-        <h3>🏆 Lencana Pencapaian</h3>
-        <div class="badges-grid" id="badgesContainer">
-          <!-- Generasi Badge via JS -->
-        </div>
+        <h3>Lencana Pencapaian</h3>
+        <div class="badges-grid" id="badgesContainer"></div>
       </section>
 
       <!-- Riwayat Transaksi -->
       <section class="card">
-        <h3>📜 Riwayat Pengeluaran</h3>
+        <h3>Riwayat Pengeluaran</h3>
         <ul class="history-list" id="historyList">
           <li class="empty-msg">Belum ada pengeluaran dicatat.</li>
         </ul>
@@ -131,14 +126,14 @@
       </section>
     </main>
 
-    <!-- NAVIGASI TAB BAWAH (BOTTOM NAV) -->
+    <!-- NAVIGASI TAB BAWAH -->
     <nav class="bottom-nav">
       <button class="nav-item active" id="navHomeBtn">
         <span class="nav-icon">🏠</span>
         <span class="nav-label">Beranda</span>
       </button>
       <button class="nav-item" id="navSettingsBtn">
-        <span class="nav-icon">⚙️</span>
+        <span class="nav-icon">🎯</span>
         <span class="nav-label">Target & Badges</span>
       </button>
     </nav>
