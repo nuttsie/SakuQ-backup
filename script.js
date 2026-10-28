@@ -47,11 +47,36 @@ document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   loadData();
   registerEvents();
+  initTabNavigation();
   render();
 });
 
 // ==========================================
-// 4. FITUR TEMA (DARK / LIGHT MODE)
+// 4. LOGIKA TAB NAVIGATION
+// ==========================================
+function initTabNavigation() {
+  const navHomeBtn = document.getElementById('navHomeBtn');
+  const navSettingsBtn = document.getElementById('navSettingsBtn');
+  const tabHome = document.getElementById('tabHome');
+  const tabSettings = document.getElementById('tabSettings');
+
+  navHomeBtn.addEventListener('click', () => {
+    navHomeBtn.classList.add('active');
+    navSettingsBtn.classList.remove('active');
+    tabHome.classList.add('active-tab');
+    tabSettings.classList.remove('active-tab');
+  });
+
+  navSettingsBtn.addEventListener('click', () => {
+    navSettingsBtn.classList.add('active');
+    navHomeBtn.classList.remove('active');
+    tabSettings.classList.add('active-tab');
+    tabHome.classList.remove('active-tab');
+  });
+}
+
+// ==========================================
+// 5. FITUR TEMA (DARK / LIGHT MODE)
 // ==========================================
 function initTheme() {
   const savedTheme = localStorage.getItem('sakuquest_theme') || 'dark';
@@ -75,7 +100,7 @@ function toggleTheme() {
 }
 
 // ==========================================
-// 5. PENYIMPANAN DATA (LOCALSTORAGE)
+// 6. PENYIMPANAN DATA (LOCALSTORAGE)
 // ==========================================
 function loadData() {
   const saved = localStorage.getItem('sakuquest_data');
@@ -90,7 +115,7 @@ function saveData() {
 }
 
 // ==========================================
-// 6. EVENT LISTENERS & FORM HANDLING
+// 7. EVENT LISTENERS & FORM HANDLING
 // ==========================================
 function registerEvents() {
   const themeBtn = document.getElementById('themeToggleBtn');
@@ -121,7 +146,7 @@ function registerEvents() {
       appData.isCelebrated = false;
 
       saveData();
-      alert(`🎯 Target "${targetName}" berhasil disimpan! Silakan lanjut ke Langkah 2 (Atur Uang Saku).`);
+      alert(`🎯 Target "${targetName}" disimpan! Lanjut atur uang saku di Langkah 2.`);
     });
   }
 
@@ -142,7 +167,7 @@ function registerEvents() {
       appData.savingsTotal += autoSavedAmount;
 
       saveData();
-      alert(`💰 Uang saku diatur! Rp ${autoSavedAmount.toLocaleString('id-ID')} otomatis ditabung ke target impian.`);
+      alert(`💰 Uang saku diatur! Rp ${autoSavedAmount.toLocaleString('id-ID')} masuk ke tabungan.`);
     });
   }
 
@@ -181,7 +206,7 @@ function registerEvents() {
 }
 
 // ==========================================
-// 7. KALKULASI & STREAK
+// 8. KALKULASI & STREAK
 // ==========================================
 function calculateDailyBudget() {
   if (appData.allowance <= 0) return 0;
@@ -213,47 +238,16 @@ function updateStreak() {
 }
 
 // ==========================================
-// 8. RENDER TAMPILAN & LOGIKA BERTAHAP
+// 9. RENDER TAMPILAN
 // ==========================================
 function render() {
-  // --- A. KONTROL PROGRESSIVE DISCLOSURE (BERTAHAP) ---
-  const step1Card = document.getElementById('step1Card');
-  const step2Card = document.getElementById('step2Card');
-  const expenseCard = document.getElementById('expenseCard');
-  const extraContent = document.getElementById('extraContent');
-
-  // Cek apakah Langkah 1 (Target) sudah diisi
-  const hasTarget = appData.targetAmount > 0;
-  // Cek apakah Langkah 2 (Uang Saku) sudah diisi
-  const hasAllowance = appData.allowance > 0 || appData.savingsTotal > 0;
-
-  if (!hasTarget) {
-    // Baru pertama kali buka: HANYA TAMPILKAN LANGKAH 1
-    step1Card.classList.remove('hidden-step');
-    step2Card.classList.add('hidden-step');
-    expenseCard.classList.add('hidden-step');
-    extraContent.classList.add('hidden-step');
-  } else if (hasTarget && !hasAllowance) {
-    // Target sudah ada, tapi belum set Uang Saku: TAMPILKAN LANGKAH 2
-    step1Card.classList.add('hidden-step');
-    step2Card.classList.remove('hidden-step');
-    expenseCard.classList.add('hidden-step');
-    extraContent.classList.add('hidden-step');
-  } else {
-    // Semua setup selesai: TAMPILKAN CATAT PENGELUARAN & RIWAYAT
-    step1Card.classList.add('hidden-step');
-    step2Card.classList.add('hidden-step');
-    expenseCard.classList.remove('hidden-step');
-    extraContent.classList.remove('hidden-step');
-  }
-
-  // --- B. RENDER RINGKASAN ANGKA ---
+  // A. Ringkasan Angka
   const dailyBudget = calculateDailyBudget();
   document.getElementById('dailyBudgetDisplay').textContent = `Rp ${Math.round(dailyBudget).toLocaleString('id-ID')}`;
   document.getElementById('totalSavingsDisplay').textContent = `Rp ${appData.savingsTotal.toLocaleString('id-ID')}`;
   document.getElementById('streakCount').textContent = appData.streakDays;
 
-  // --- C. RENDER TARGET ---
+  // B. Render Target
   const targetNameEl = document.getElementById('targetNameDisplay');
   if (targetNameEl) {
     if (appData.targetLink) {
@@ -287,7 +281,7 @@ function render() {
     }
   }
 
-  // --- D. EFEK SELEBRASI 100% ---
+  // C. Efek Selebrasi 100%
   if (progressPercent >= 100 && !appData.isCelebrated) {
     triggerRewardConfetti();
     appData.isCelebrated = true;
@@ -298,7 +292,7 @@ function render() {
     }, 400);
   }
 
-  // --- E. RENDER LENCANA ---
+  // D. Render Badges
   const badgesContainer = document.getElementById('badgesContainer');
   if (badgesContainer) {
     badgesContainer.innerHTML = '';
@@ -314,7 +308,7 @@ function render() {
     });
   }
 
-  // --- F. RENDER RIWAYAT ---
+  // E. Render Riwayat
   const historyList = document.getElementById('historyList');
   if (historyList) {
     if (appData.expenses.length === 0) {
@@ -331,7 +325,7 @@ function render() {
 }
 
 // ==========================================
-// 9. UTILITY (EFEK KONFETI)
+// 10. UTILITY (EFEK KONFETI)
 // ==========================================
 function triggerRewardConfetti() {
   if (typeof confetti === 'function') {
@@ -341,4 +335,4 @@ function triggerRewardConfetti() {
       origin: { y: 0.6 }
     });
   }
-                                                                                                                                             }
+  }
