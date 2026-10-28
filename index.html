@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SakuQ - Hemat & Nabung Seru</title>
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=5">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
   <div class="app-container">
-    <!-- Header -->
+    <!-- Header Utama -->
     <header class="app-header">
       <div class="logo">
         <span class="logo-icon">👛</span>
@@ -24,92 +24,96 @@
       </div>
     </header>
 
-    <!-- Ringkasan Saku (Selalu Tampak) -->
-    <section class="card summary-card">
-      <h2>Ringkasan Saku</h2>
-      <div class="grid-2">
-        <div class="stat-box">
-          <small>Sisa Jajan Hari Ini</small>
-          <div class="stat-value" id="dailyBudgetDisplay">Rp 0</div>
-        </div>
-        <div class="stat-box">
-          <small>Total Tabungan</small>
-          <div class="stat-value highlight" id="totalSavingsDisplay">Rp 0</div>
-        </div>
-      </div>
-      
-      <!-- Progress Bar Target -->
-      <div class="target-section">
-        <div class="target-header">
-          <span>Target: <strong id="targetNameDisplay">Belum Ada Target</strong></span>
-          <div>
-            <span id="targetAmountDisplay" style="font-weight: bold; margin-right: 8px;">Rp 0 / Rp 0</span>
-            <span id="targetProgressPercent">0%</span>
+    <!-- TAB 1: BERANDA (Halaman Utamaku) -->
+    <main id="tabHome" class="tab-content active-tab">
+      <!-- Ringkasan Saku -->
+      <section class="card summary-card">
+        <h2>Ringkasan Saku</h2>
+        <div class="grid-2">
+          <div class="stat-box">
+            <small>Sisa Jajan Hari Ini</small>
+            <div class="stat-value" id="dailyBudgetDisplay">Rp 0</div>
+          </div>
+          <div class="stat-box">
+            <small>Total Tabungan</small>
+            <div class="stat-value highlight" id="totalSavingsDisplay">Rp 0</div>
           </div>
         </div>
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill" id="targetProgressBar" style="width: 0%;"></div>
+        
+        <!-- Progress Bar Target -->
+        <div class="target-section">
+          <div class="target-header">
+            <span>Target: <strong id="targetNameDisplay">Belum Ada Target</strong></span>
+            <div>
+              <span id="targetAmountDisplay" style="font-weight: bold; margin-right: 8px;">Rp 0 / Rp 0</span>
+              <span id="targetProgressPercent">0%</span>
+            </div>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="targetProgressBar" style="width: 0%;"></div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- KARTU 1: Form Target Impian (Langkah Pertama) -->
-    <section class="card" id="step1Card">
-      <h3>🎯 Langkah 1: Set Target Impian</h3>
-      <form id="targetForm" class="form-group">
-        <label for="targetNameInput">Nama Barang / Impian</label>
-        <input type="text" id="targetNameInput" placeholder="Contoh: Beli Sepatu Baru" required>
+      <!-- Form Catat Pengeluaran -->
+      <section class="card">
+        <h3>➕ Catat Pengeluaran</h3>
+        <form id="expenseForm" class="form-group">
+          <label for="expenseTitle">Keterangan / Jajanan</label>
+          <input type="text" id="expenseTitle" placeholder="Contoh: Es Boba / Cilok" required>
 
-        <label for="targetAmountInput">Nominal Target (Rp)</label>
-        <input type="text" id="targetAmountInput" inputmode="numeric" placeholder="Rp 0" required>
+          <label for="expenseAmount">Nominal (Rp)</label>
+          <input type="text" id="expenseAmount" inputmode="numeric" placeholder="Rp 0" required>
 
-        <label for="targetLinkInput">Link Barang (Opsional)</label>
-        <input type="url" id="targetLinkInput" placeholder="https://tokopedia.link/... atau shopee.co.id/...">
-        <small style="font-size: 0.75rem; color: var(--text-muted); margin-top: -4px; display: block;">
-          💡 <i>Catatan: Masukkan link toko online agar kamu bisa mengecek produknya sewaktu-waktu.</i>
-        </small>
+          <button type="submit" class="btn btn-action">Catat Pengeluaran</button>
+        </form>
+      </section>
+    </main>
 
-        <button type="submit" class="btn btn-primary">Simpan Target</button>
-      </form>
-    </section>
+    <!-- TAB 2: PENCAPAIAN & PENGATURAN -->
+    <main id="tabSettings" class="tab-content">
+      <!-- Langkah 1: Form Target Impian -->
+      <section class="card">
+        <h3>🎯 Langkah 1: Set Target Impian</h3>
+        <form id="targetForm" class="form-group">
+          <label for="targetNameInput">Nama Barang / Impian</label>
+          <input type="text" id="targetNameInput" placeholder="Contoh: Beli Sepatu Baru" required>
 
-    <!-- KARTU 2: Form Uang Saku & Auto-Save (Awalnya Tersembunyi) -->
-    <section class="card hidden-step" id="step2Card">
-      <h3>💰 Langkah 2: Atur Uang Saku</h3>
-      <form id="allowanceForm" class="form-group">
-        <label for="allowanceInput">Nominal Uang Saku (Rp)</label>
-        <input type="text" id="allowanceInput" inputmode="numeric" placeholder="Rp 0" required>
+          <label for="targetAmountInput">Nominal Target (Rp)</label>
+          <input type="text" id="targetAmountInput" inputmode="numeric" placeholder="Rp 0" required>
 
-        <label for="periodSelect">Periode Uang Saku</label>
-        <select id="periodSelect">
-          <option value="1">Harian (1 Hari)</option>
-          <option value="7" selected>Mingguan (7 Hari)</option>
-          <option value="30">Bulanan (30 Hari)</option>
-        </select>
+          <label for="targetLinkInput">Link Barang (Opsional)</label>
+          <input type="url" id="targetLinkInput" placeholder="https://tokopedia.link/... atau shopee.co.id/...">
+          <small style="font-size: 0.75rem; color: var(--text-muted); margin-top: -4px; display: block;">
+            💡 <i>Catatan: Masukkan link toko online agar kamu bisa mengecek produknya sewaktu-waktu.</i>
+          </small>
 
-        <label for="autoSavePercent">Alokasi Auto-Save (%)</label>
-        <input type="number" id="autoSavePercent" value="10" min="0" max="50">
+          <button type="submit" class="btn btn-primary">Simpan Target</button>
+        </form>
+      </section>
 
-        <button type="submit" class="btn btn-action">Set Uang Saku & Nabung</button>
-      </form>
-    </section>
+      <!-- Langkah 2: Form Uang Saku -->
+      <section class="card">
+        <h3>💰 Langkah 2: Atur Uang Saku</h3>
+        <form id="allowanceForm" class="form-group">
+          <label for="allowanceInput">Nominal Uang Saku (Rp)</label>
+          <input type="text" id="allowanceInput" inputmode="numeric" placeholder="Rp 0" required>
 
-    <!-- KARTU 3: Form Catat Pengeluaran (Awalnya Tersembunyi) -->
-    <section class="card hidden-step" id="expenseCard">
-      <h3>➕ Catat Pengeluaran</h3>
-      <form id="expenseForm" class="form-group">
-        <label for="expenseTitle">Keterangan / Jajanan</label>
-        <input type="text" id="expenseTitle" placeholder="Contoh: Es Boba / Cilok" required>
+          <label for="periodSelect">Periode Uang Saku</label>
+          <select id="periodSelect">
+            <option value="1">Harian (1 Hari)</option>
+            <option value="7" selected>Mingguan (7 Hari)</option>
+            <option value="30">Bulanan (30 Hari)</option>
+          </select>
 
-        <label for="expenseAmount">Nominal (Rp)</label>
-        <input type="text" id="expenseAmount" inputmode="numeric" placeholder="Rp 0" required>
+          <label for="autoSavePercent">Alokasi Auto-Save (%)</label>
+          <input type="number" id="autoSavePercent" value="10" min="0" max="50">
 
-        <button type="submit" class="btn btn-action">Catat Pengeluaran</button>
-      </form>
-    </section>
+          <button type="submit" class="btn btn-action">Set Uang Saku & Nabung</button>
+        </form>
+      </section>
 
-    <!-- KARTU 4: Lencana & Riwayat (Awalnya Tersembunyi) -->
-    <div id="extraContent" class="hidden-step">
+      <!-- Badges -->
       <section class="card">
         <h3>🏆 Lencana Pencapaian</h3>
         <div class="badges-grid" id="badgesContainer">
@@ -117,14 +121,27 @@
         </div>
       </section>
 
-      <section class="card" style="margin-top: 10px;">
+      <!-- Riwayat Transaksi -->
+      <section class="card">
         <h3>📜 Riwayat Pengeluaran</h3>
         <ul class="history-list" id="historyList">
           <li class="empty-msg">Belum ada pengeluaran dicatat.</li>
         </ul>
         <button id="resetDataBtn" class="btn btn-danger">Reset Semua Data</button>
       </section>
-    </div>
+    </main>
+
+    <!-- NAVIGASI TAB BAWAH (BOTTOM NAV) -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" id="navHomeBtn">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Beranda</span>
+      </button>
+      <button class="nav-item" id="navSettingsBtn">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Target & Badges</span>
+      </button>
+    </nav>
   </div>
 
   <script src="script.js"></script>
