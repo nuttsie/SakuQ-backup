@@ -19,13 +19,13 @@
   --bg-color: #f1f5f9;
   --card-bg: #ffffff;
   --text-color: #0f172a;
-  --text-muted: #334155;  
+  --text-muted: #334155;
   --border-color: #cbd5e1;
   --input-bg: #f8fafc;
 }
 
 /* ==========================================
-   2. STYLES GLOBAL & TAMPILAN DASAR
+   2. STYLES GLOBAL & LAYOUT
    ========================================== */
 * {
   box-sizing: border-box;
@@ -39,7 +39,7 @@ body {
   color: var(--text-color);
   display: flex;
   justify-content: center;
-  padding: 10px;
+  padding: 10px 10px 70px 10px; /* Padding bawah 70px untuk memberi ruang Bottom Nav */
   min-height: 100vh;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -50,11 +50,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-/* KELAS BERTAHAP (PROGRESSIVE DISCLOSURE) */
-.hidden-step {
-  display: none !important;
 }
 
 /* Header */
@@ -114,7 +109,20 @@ body {
 }
 
 /* ==========================================
-   3. KARTU & JUDUL (CARD & HEADINGS)
+   3. SISTEM TAB KONTEN
+   ========================================== */
+.tab-content {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tab-content.active-tab {
+  display: flex;
+}
+
+/* ==========================================
+   4. KARTU & JUDUL
    ========================================== */
 .card {
   background-color: var(--card-bg);
@@ -164,7 +172,7 @@ body {
 }
 
 /* ==========================================
-   4. PROGRESS BAR & TARGET
+   5. PROGRESS BAR & TARGET
    ========================================== */
 .target-section {
   background-color: var(--input-bg);
@@ -198,7 +206,7 @@ body {
 }
 
 /* ==========================================
-   5. FORM & INPUTS
+   6. FORM & INPUTS
    ========================================== */
 .form-group {
   display: flex;
@@ -267,7 +275,7 @@ input:focus, select:focus {
 }
 
 /* ==========================================
-   6. BADGES & RIWAYAT
+   7. BADGES & RIWAYAT
    ========================================== */
 .badges-grid {
   display: grid;
@@ -324,4 +332,48 @@ input:focus, select:focus {
   color: var(--text-muted);
   font-size: 0.78rem;
   padding: 8px 0;
+}
+
+/* ==========================================
+   8. BOTTOM NAVIGATION (BAR BAWAH)
+   ========================================== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 400px;
+  background-color: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-around;
+  padding: 6px 0;
+  z-index: 100;
+}
+
+.nav-item {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  flex: 1;
+  transition: color 0.2s ease;
+}
+
+.nav-icon {
+  font-size: 1.2rem;
+}
+
+.nav-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.nav-item.active {
+  color: var(--primary);
 }
