@@ -64,7 +64,7 @@
         <input type="text" id="targetNameInput" placeholder="Contoh: Beli Sepatu Baru" required>
 
         <label for="targetAmountInput">Nominal Target (Rp)</label>
-        <input type="number" id="targetAmountInput" placeholder="Contoh: 200000" required min="1000">
+        <input type="text" id="targetAmountInput" inputmode="numeric" placeholder="Rp 0" required>
 
         <label for="targetLinkInput">Link Barang (Opsional)</label>
         <input type="url" id="targetLinkInput" placeholder="https://tokopedia.link/... atau shopee.co.id/...">
@@ -81,7 +81,7 @@
       <h3>💰 Langkah 2: Atur Uang Saku</h3>
       <form id="allowanceForm" class="form-group">
         <label for="allowanceInput">Nominal Uang Saku (Rp)</label>
-        <input type="number" id="allowanceInput" placeholder="Contoh: 100000" required min="1000">
+        <input type="text" id="allowanceInput" inputmode="numeric" placeholder="Rp 0" required>
 
         <label for="periodSelect">Periode Uang Saku</label>
         <select id="periodSelect">
@@ -105,7 +105,7 @@
         <input type="text" id="expenseTitle" placeholder="Contoh: Es Boba / Cilok" required>
 
         <label for="expenseAmount">Nominal (Rp)</label>
-        <input type="number" id="expenseAmount" placeholder="Contoh: 10000" required min="500">
+        <input type="text" id="expenseAmount" inputmode="numeric" placeholder="Rp 0" required>
 
         <button type="submit" class="btn btn-action">Catat Pengeluaran</button>
       </form>
