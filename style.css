@@ -376,4 +376,4 @@ input:focus, select:focus {
 
 .nav-item.active {
   color: var(--primary);
-   }
+}
