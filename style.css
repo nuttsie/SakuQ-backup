@@ -19,7 +19,7 @@
   --bg-color: #f1f5f9;
   --card-bg: #ffffff;
   --text-color: #0f172a;
-  --text-muted: #334155;
+  --text-muted: #334155;  
   --border-color: #cbd5e1;
   --input-bg: #f8fafc;
 }
@@ -50,6 +50,11 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+/* KELAS BERTAHAP (PROGRESSIVE DISCLOSURE) */
+.hidden-step {
+  display: none !important;
 }
 
 /* Header */
