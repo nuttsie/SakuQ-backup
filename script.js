@@ -23,7 +23,26 @@ const BADGES = [
 ];
 
 // ==========================================
-// 2. INISIALISASI SAAT HALAMAN DIMUAT
+// 2. HELPER FORMAT RUPIAH
+// ==========================================
+function formatRupiahInput(e) {
+  let value = e.target.value.replace(/[^0-9]/g, '');
+  if (value) {
+    let numberVal = parseInt(value, 10);
+    e.target.value = 'Rp ' + numberVal.toLocaleString('id-ID');
+  } else {
+    e.target.value = '';
+  }
+}
+
+function parseRupiahValue(textValue) {
+  if (!textValue) return 0;
+  const cleanNumber = textValue.replace(/[^0-9]/g, '');
+  return parseFloat(cleanNumber) || 0;
+}
+
+// ==========================================
+// 3. INISIALISASI SAAT HALAMAN DIMUAT
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
@@ -33,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// 3. FITUR TEMA (DARK / LIGHT MODE)
+// 4. FITUR TEMA (DARK / LIGHT MODE)
 // ==========================================
 function initTheme() {
   const savedTheme = localStorage.getItem('sakuquest_theme') || 'dark';
@@ -57,7 +76,7 @@ function toggleTheme() {
 }
 
 // ==========================================
-// 4. PENYIMPANAN DATA (LOCALSTORAGE)
+// 5. PENYIMPANAN DATA (LOCALSTORAGE)
 // ==========================================
 function loadData() {
   const saved = localStorage.getItem('sakuquest_data');
@@ -72,7 +91,7 @@ function saveData() {
 }
 
 // ==========================================
-// 5. EVENT LISTENERS & FORM HANDLING
+// 6. EVENT LISTENERS & FORM HANDLING
 // ==========================================
 function registerEvents() {
   // A. Toggle Tema Gelap / Terang
@@ -81,13 +100,22 @@ function registerEvents() {
     themeBtn.onclick = toggleTheme;
   }
 
-  // B. Langkah 1: Form Target Impian
+  // B. Pasang Format Rupiah Otomatis ke Input Nominal
+  const rupiahInputs = ['targetAmountInput', 'allowanceInput', 'expenseAmount'];
+  rupiahInputs.forEach(id => {
+    const inputEl = document.getElementById(id);
+    if (inputEl) {
+      inputEl.addEventListener('input', formatRupiahInput);
+    }
+  });
+
+  // C. Langkah 1: Form Target Impian
   const targetForm = document.getElementById('targetForm');
   if (targetForm) {
     targetForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const targetName = document.getElementById('targetNameInput').value;
-      const targetAmount = parseFloat(document.getElementById('targetAmountInput').value) || 0;
+      const targetAmount = parseRupiahValue(document.getElementById('targetAmountInput').value);
       const targetLink = document.getElementById('targetLinkInput').value;
 
       appData.targetName = targetName;
@@ -100,12 +128,12 @@ function registerEvents() {
     });
   }
 
-  // C. Langkah 2: Form Uang Saku & Auto-Save
+  // D. Langkah 2: Form Uang Saku & Auto-Save
   const allowanceForm = document.getElementById('allowanceForm');
   if (allowanceForm) {
     allowanceForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const allowance = parseFloat(document.getElementById('allowanceInput').value) || 0;
+      const allowance = parseRupiahValue(document.getElementById('allowanceInput').value);
       const periodDays = parseInt(document.getElementById('periodSelect').value) || 1;
       const autoSavePercent = parseFloat(document.getElementById('autoSavePercent').value) || 0;
 
@@ -121,13 +149,13 @@ function registerEvents() {
     });
   }
 
-  // D. Form Catat Pengeluaran Harian
+  // E. Form Catat Pengeluaran Harian
   const expenseForm = document.getElementById('expenseForm');
   if (expenseForm) {
     expenseForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const title = document.getElementById('expenseTitle').value;
-      const amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
+      const amount = parseRupiahValue(document.getElementById('expenseAmount').value);
 
       appData.expenses.unshift({
         id: Date.now(),
@@ -143,7 +171,7 @@ function registerEvents() {
     });
   }
 
-  // E. Tombol Reset Semua Data
+  // F. Tombol Reset Semua Data
   const resetBtn = document.getElementById('resetDataBtn');
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
@@ -156,7 +184,7 @@ function registerEvents() {
 }
 
 // ==========================================
-// 6. LOGIKA KALKULASI & STREAK AKURAT
+// 7. LOGIKA KALKULASI & STREAK AKURAT
 // ==========================================
 function calculateDailyBudget() {
   if (appData.allowance <= 0) return 0;
@@ -168,32 +196,28 @@ function calculateDailyBudget() {
   return dailyLimit > 0 ? dailyLimit : 0;
 }
 
-// Logika Streak Baru: Streak bertambah jika belanja harian MASIH DI BAWAH batas jajan harian
 function updateStreak() {
   const today = new Date().toLocaleDateString('id-ID');
   
-  // Hitung total belanjaan hari ini
   const todayExpenses = appData.expenses
     .filter(item => item.date === today)
     .reduce((sum, item) => sum + item.amount, 0);
 
   const dailyBudget = calculateDailyBudget();
 
-  // Jika pengeluaran hari ini masih sesuai atau di bawah batas harian
   if (todayExpenses <= dailyBudget) {
     if (appData.lastStreakDate !== today) {
       appData.streakDays += 1;
       appData.lastStreakDate = today;
     }
   } else {
-    // Jika melebihi batas (overbudget), streak terputus / reset
     appData.streakDays = 0;
     appData.lastStreakDate = today;
   }
 }
 
 // ==========================================
-// 7. RENDER TAMPILAN (UI UPDATE)
+// 8. RENDER TAMPILAN (UI UPDATE)
 // ==========================================
 function render() {
   // A. Ringkasan Angka
@@ -283,7 +307,7 @@ function render() {
 }
 
 // ==========================================
-// 8. UTILITY (EFEK KONFETI)
+// 9. UTILITY (EFEK KONFETI)
 // ==========================================
 function triggerRewardConfetti() {
   if (typeof confetti === 'function') {
@@ -293,4 +317,4 @@ function triggerRewardConfetti() {
       origin: { y: 0.6 }
     });
   }
-}
+    }
